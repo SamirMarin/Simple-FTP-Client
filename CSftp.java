@@ -1,8 +1,11 @@
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.lang.System;
 import java.io.IOException;
+import java.net.Socket;
+import java.nio.Buffer;
 
 //
 // This is an implementation of a simplified version of a command 
@@ -13,10 +16,11 @@ import java.io.IOException;
 public class CSftp
 {
     static final int MAX_LEN = 255;
-
+	public static Socket controlCxn;
+	public static BufferedReader br;
+	public static PrintWriter pr;
     public static void main(String [] args)
     {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	byte cmdString[] = new byte[MAX_LEN];
 		int len;
 	try {
