@@ -15,27 +15,31 @@ import java.nio.Buffer;
 
 public class CSftp
 {
-    static final int MAX_LEN = 255;
+	static final int MAX_LEN = 255;
 	public static Socket controlCxn;
 	public static BufferedReader br;
 	public static PrintWriter pr;
-    public static void main(String [] args)
-    {
-	byte cmdString[] = new byte[MAX_LEN];
+	public static void main(String [] args)
+	{
+		byte cmdString[] = new byte[MAX_LEN];
 		int len;
-	try {
-		while (true) {
-		System.out.print("csftp> ");
-			len = System.in.read(cmdString);
-		if (len <= 0)
-		    break;
+		String cmd;
+		try {
+			while (true) {
+				System.out.print("csftp> ");
+				len = System.in.read(cmdString);
+				if (len <= 0)
+					break;
+				cmd = new String(cmdString, "UTF-8");
 
-			Commands.parseInput(cmdString.toString()); // returns an Array of strings
-		// Start processing the command here.
-		System.out.println("900 Invalid command.");
-	    }
-	} catch (IOException exception) {
-	    System.err.println("998 Input error while reading commands, terminating.");
+
+
+				Commands.parseInput(cmd); // returns an Array of strings
+				// Start processing the command here.
+				System.out.println("900 Invalid command.");
+			}
+		} catch (IOException exception) {
+			System.err.println("998 Input error while reading commands, terminating.");
+		}
 	}
-    }
 }

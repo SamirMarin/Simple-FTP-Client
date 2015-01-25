@@ -15,7 +15,7 @@ public final class Commands {
     public static int parseInput(String cmd) {
      System.out.println(cmd);
 
-    handleCommand(cmd.split(" "));
+    handleCommand(cmd.split("\\s"));
     return 0;
 
     }
@@ -52,12 +52,20 @@ public final class Commands {
 
     }
     public static int openCmd(String[] args) {
+        System.out.println(args[0]);
+        System.out.print(args[1]);
         if (!args[0].equalsIgnoreCase("open")) {
             return -1;
         }
+        if(args.length < 2){
+            return -1;// figure out to do something with return statements
+        }
         String hostName = args[1];
-        int port = Integer.parseInt(args[2]);
-        if (port == 0) {
+        int port;
+        if(args.length == 3){
+            port = Integer.parseInt(args[2]);
+        }
+        else {
             port = 21;
         }
         try {
