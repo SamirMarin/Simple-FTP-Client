@@ -17,8 +17,8 @@ public class CSftp
 {
 	static final int MAX_LEN = 255;
 	public static Socket controlCxn;
-	public static BufferedReader br;
-	public static PrintWriter pr;
+	public static BufferedReader sbr;
+	public static PrintWriter spr;
 	public static void main(String [] args)
 	{
 		byte cmdString[] = new byte[MAX_LEN];
