@@ -1,4 +1,6 @@
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.lang.System;
 import java.io.IOException;
 
@@ -14,13 +16,17 @@ public class CSftp
 
     public static void main(String [] args)
     {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 	byte cmdString[] = new byte[MAX_LEN];
+		int len;
 	try {
-	    for (int len = 1; len > 0;) {
+		while (true) {
 		System.out.print("csftp> ");
-		len = System.in.read(cmdString);
-		if (len <= 0) 
+			len = System.in.read(cmdString);
+		if (len <= 0)
 		    break;
+
+			Commands.parseInput(cmdString.toString()); // returns an Array of strings
 		// Start processing the command here.
 		System.out.println("900 Invalid command.");
 	    }
