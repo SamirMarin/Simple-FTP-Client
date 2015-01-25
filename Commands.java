@@ -13,15 +13,16 @@ public final class Commands {
 
 
     public static int parseInput(String cmd) {
-     System.out.println(cmd);
+        System.out.println(cmd);
 
-    handleCommand(cmd.split(" "));
-    return 0;
+        handleCommand(cmd.split("\\s"));
+        return 0;
 
     }
 
 
     public static int handleCommand(String [] args){
+        System.out.println(args[0]);
         switch (CommandStrings.valueOf(args[0].toUpperCase())) {
             case OPEN:
                 openCmd(args);
@@ -56,15 +57,16 @@ public final class Commands {
             return -1;
         }
         String hostName = args[1];
+
         int port = Integer.parseInt(args[2]);
         if (port == 0) {
             port = 21;
         }
         try {
             CSftp.controlCxn = new Socket(hostName, port);
-            CSftp.pr =
+            CSftp.spr =
                     new PrintWriter(CSftp.controlCxn.getOutputStream(), true);
-            CSftp.br =
+            CSftp.sbr =
                     new BufferedReader(
                             new InputStreamReader(CSftp.controlCxn.getInputStream()));
         }
