@@ -95,7 +95,8 @@ public final class Commands {
           }
         }
         else {
-           port = 21;
+            port = 21;
+        }
 
         try {
             controlCxn = new Socket(hostName, port);
