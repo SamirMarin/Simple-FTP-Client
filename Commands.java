@@ -1,7 +1,5 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
+
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -13,9 +11,11 @@ public final class Commands {
 
     private static Socket datacxn;
     private static Socket controlCxn;
-    private static BufferedReader serverIn;
-    private static PrintWriter serverOut;
-    private static int countRead = 0;
+
+    private static DataOutputStream serverOut;
+    private static Thread receiveserver;
+    private static ServerMessages sm;
+
 
     public static int parseInput(String cmd) {
         ArrayList<String> args = new ArrayList<String>();
@@ -29,20 +29,20 @@ public final class Commands {
 
 
         }
-        handleCommand(args);
+        handleCommand(args, cmd);
         return 0;
 
     }
 
 
-    public static int handleCommand(ArrayList<String> args) {
+    public static int handleCommand(ArrayList<String> args, String cmd) {
         try {
             switch (CommandStrings.valueOf(args.get(0).toUpperCase())) {
                 case OPEN:
                     openCmd(args);
                     break;
                 case USER:
-                    userCmd();
+                    userCmd(args, cmd);
                     break;
                 case CLOSE:
                     closeCmd(args);
@@ -71,7 +71,7 @@ public final class Commands {
     public static int openCmd(ArrayList<String> args) {
         if (controlCxn != null) {
             System.out.println("Already connected to server, please quit before connecting to another server");
-            return -1;
+            return -1; // NOT WORKING YET
         }
         if (args.size() < 2) {
             System.out.println("801 Incorrect number of arguments");
@@ -83,7 +83,7 @@ public final class Commands {
         }
         String hostName = args.get(1);
 
-        int port=21;
+        int port;
         if(args.size() == 3){
           try {
                port = Integer.parseInt(args.get(2));
@@ -96,37 +96,43 @@ public final class Commands {
         else {
            port = 21;
         }
-        System.out.println("Made it this far");
         try {
             controlCxn = new Socket(hostName, port);
-            serverOut =
-                    new PrintWriter(controlCxn.getOutputStream(), true);
-            serverIn =
-                    new BufferedReader(
-                            new InputStreamReader(controlCxn.getInputStream()));
+            serverOut = new DataOutputStream(controlCxn.getOutputStream());
+            sm = new ServerMessages(new BufferedReader(
+                            new InputStreamReader(controlCxn.getInputStream())));
+        receiveserver = new Thread(sm);
+            receiveserver.start();
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return 0;
     }
-    public static int userCmd() {
+    public static int userCmd(ArrayList<String> args, String cmd) {
+        if (args.size() != 2) {
+            return -1;
+        }
+        if (!args.get(0).equalsIgnoreCase("user")) {
+            return -1;
+        }
+        sendInput(cmd);
 
         return 0;
     }
     public static int closeCmd(ArrayList<String> args) {
-        /*if(args.size() > 1){
+        if(args.size() > 1){
             return -1;
-        }*/
+        }
         if(!args.get(0).equalsIgnoreCase("close")){
             return -1;
         }
         else{
             try {
-                serverIn.close();
+
                 serverOut.close();
+                sm.getServerIn().close();
                 controlCxn.close();
-                countRead = 0;
             } catch (IOException e) {
                 System.err.println(e.getCause());
             }
@@ -137,24 +143,40 @@ public final class Commands {
 
         return 0;
     }
-    public static void readInput() {
-        if (serverIn == null) {
-            return;
+
+
+    public static void sendInput(String cmd) {
+        try {
+             serverOut.writeUTF(cmd);
         }
-        else if(countRead > 0){
-            return;
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+
         }
-        countRead++;
-            try {
-                System.out.println(serverIn.readLine());
+    }
+    public static Socket getControlCxn() {
+        return controlCxn;
+    }
 
-            } catch (Exception e) {
-                System.err.println(e.getCause());
-                return;
-            }
+    public static void setControlCxn(Socket controlCxn) {
+        Commands.controlCxn = controlCxn;
+    }
 
-        return;
 
+    public static DataOutputStream getServerOut() {
+        return serverOut;
+    }
+
+    public static void setServerOut(DataOutputStream serverOut) {
+        Commands.serverOut = serverOut;
+    }
+
+    public static Socket getDatacxn() {
+        return datacxn;
+    }
+
+    public static void setDatacxn(Socket datacxn) {
+        Commands.datacxn = datacxn;
     }
 
     public static enum CommandStrings {

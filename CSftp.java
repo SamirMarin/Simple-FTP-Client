@@ -33,13 +33,13 @@ public class CSftp
 				cmd = new String(cmdString, "UTF-8");
 
 
-
-				Commands.parseInput(cmd); // returns an Array of strings
+				Commands.parseInput(cmd);
+				//Arrays.fill(cmdString, (byte) 0);
 				// Start processing the command here.
-				Commands.readInput();
-			}
+				}
 		} catch (IOException exception) {
 			System.err.println("898 Input error while reading commands, terminating.");
 		}
 	}
-}
+
+	}
