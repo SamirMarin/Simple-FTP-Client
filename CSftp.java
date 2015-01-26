@@ -16,9 +16,6 @@ import java.nio.Buffer;
 public class CSftp
 {
 	static final int MAX_LEN = 255;
-	public static Socket controlCxn;
-	public static BufferedReader sbr;
-	public static PrintWriter spr;
 	public static void main(String [] args)
 	{
 		byte cmdString[] = new byte[MAX_LEN];
@@ -36,10 +33,10 @@ public class CSftp
 
 				Commands.parseInput(cmd); // returns an Array of strings
 				// Start processing the command here.
-				System.out.println("900 Invalid command.");
+				Commands.readInput();
 			}
 		} catch (IOException exception) {
-			System.err.println("998 Input error while reading commands, terminating.");
+			System.err.println("898 Input error while reading commands, terminating.");
 		}
 	}
 }

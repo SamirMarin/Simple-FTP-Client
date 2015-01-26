@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * Created by rohinpatel on 15-01-24.
@@ -9,74 +10,98 @@ import java.net.Socket;
  */
 public final class Commands {
 
-    public static Socket datacxn;
-
+    private static Socket datacxn;
+    private static Socket controlCxn;
+    private static BufferedReader serverIn;
+    private static PrintWriter serverOut;
 
     public static int parseInput(String cmd) {
-        System.out.println(cmd);
+        ArrayList<String> args = new ArrayList<String>();
+        int firstindex = 0;
+        for (int i=0; i < cmd.length(); i++) {
+           if ((cmd.charAt(i) == ' ') || (cmd.charAt(i) == '\n')) {
+               args.add(cmd.substring(firstindex,i));
+               i = ++i;
+               firstindex = i;
+           }
 
-        handleCommand(cmd.split("\\s"));
-        return 0;
 
-    }
-
-
-    public static int handleCommand(String [] args){
-        System.out.println(args[0]);
-        switch (CommandStrings.valueOf(args[0].toUpperCase())) {
-            case OPEN:
-                openCmd(args);
-                break;
-            case USER:
-                userCmd();
-                break;
-            case CLOSE:
-                closeCmd();
-                break;
-            case QUIT:
-                quitCmd();
-                break;
-            case GET:
-                break;
-            case PUT:
-                break;
-            case CD:
-                break;
-            case DIR:
-                break;
-            default:
-                return -1;
         }
-        System.out.println(args[0]);
-        System.out.println(args[1]);
+        handleCommand(args);
         return 0;
 
     }
-    public static int openCmd(String[] args) {
-        System.out.println(args[0]);
-        System.out.print(args[1]);
-        if (!args[0].equalsIgnoreCase("open")) {
+
+
+    public static int handleCommand(ArrayList<String> args) {
+        try {
+            switch (CommandStrings.valueOf(args.get(0).toUpperCase())) {
+                case OPEN:
+                    openCmd(args);
+                    break;
+                case USER:
+                    userCmd();
+                    break;
+                case CLOSE:
+                    closeCmd();
+                    break;
+                case QUIT:
+                    quitCmd();
+                    break;
+                case GET:
+                    break;
+                case PUT:
+                    break;
+                case CD:
+                    break;
+                case DIR:
+                    break;
+
+            }
+            } catch(Exception e){
+                System.out.println("800 Invalid Command");
+                return -1;
+            }
+
+        return 0;
+
+    }
+    public static int openCmd(ArrayList<String> args) {
+        if (controlCxn != null) {
+            System.out.println("Already connected to server, please quit before connecting to another server");
             return -1;
         }
-        if(args.length < 2){
-            return -1;// figure out to do something with return statements
+        if (args.size() < 2) {
+            System.out.println("801 Incorrect number of arguments");
+            return -1;
         }
-        String hostName = args[1];
 
-        int port;
-        if(args.length == 3){
-            port = Integer.parseInt(args[2]);
+        if (!args.get(0).equalsIgnoreCase("open")) {
+            return -1;
+        }
+        String hostName = args.get(1);
+
+        int port=21;
+        if(args.size() == 3){
+          try {
+               port = Integer.parseInt(args.get(2));
+          }
+          catch (Exception e) {
+              System.out.println("Invalid port, defaulting to 21");
+              port = 21;
+          }
         }
         else {
-            port = 21;
+           port = 21;
         }
+        System.out.println("Made it this far");
         try {
-            CSftp.controlCxn = new Socket(hostName, port);
-            CSftp.spr =
-                    new PrintWriter(CSftp.controlCxn.getOutputStream(), true);
-            CSftp.sbr =
+            controlCxn = new Socket(hostName, port);
+            serverOut =
+                    new PrintWriter(controlCxn.getOutputStream(), true);
+            serverIn =
                     new BufferedReader(
-                            new InputStreamReader(CSftp.controlCxn.getInputStream()));
+                            new InputStreamReader(controlCxn.getInputStream()));
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
@@ -94,6 +119,21 @@ public final class Commands {
     public static int quitCmd() {
 
         return 0;
+    }
+    public static void readInput() {
+        if (serverIn == null) {
+            return;
+        }
+        try {
+            System.out.println(serverIn.readLine());
+
+        }
+        catch (Exception e) {
+            System.err.println(e.getCause());
+            return;
+        }
+        return;
+
     }
 
     public static enum CommandStrings {

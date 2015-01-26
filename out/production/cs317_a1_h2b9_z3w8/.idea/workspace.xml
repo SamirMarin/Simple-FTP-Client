@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="9548b257-1422-4dc2-b938-40051fa39e80" name="Default" comment="">
+    <list default="true" id="f6d88d4a-1de5-42c7-9190-d4fe693f1b60" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/cs317_a1_h2b9_z3w8/.gitignore" afterPath="$PROJECT_DIR$/out/production/cs317_a1_h2b9_z3w8/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CSftp.java" afterPath="$PROJECT_DIR$/CSftp.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Commands.java" afterPath="$PROJECT_DIR$/Commands.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/out/production/cs317_a1_h2b9_z3w8/.idea/workspace.xml" afterPath="$PROJECT_DIR$/out/production/cs317_a1_h2b9_z3w8/.idea/workspace.xml" />
     </list>
     <ignored path="cs317_a1_h2b9_z3w8.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -37,20 +39,8 @@
       <file leaf-file-name="CSftp.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/CSftp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="240" max-vertical-offset="705">
-              <caret line="36" column="37" selection-start-line="36" selection-start-column="37" selection-end-line="36" selection-end-column="37" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Commands.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/Commands.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7441253" vertical-offset="90" max-vertical-offset="1470">
-              <caret line="25" column="21" selection-start-line="25" selection-start-column="21" selection-end-line="25" selection-end-column="21" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="289" max-vertical-offset="720">
+              <caret line="38" column="33" selection-start-line="38" selection-start-column="33" selection-end-line="38" selection-end-column="33" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -61,9 +51,24 @@
       <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1050">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="960" max-vertical-offset="1080">
+              <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
               <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Commands.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Commands.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.913242" vertical-offset="285" max-vertical-offset="2040">
+              <caret line="63" column="36" selection-start-line="63" selection-start-column="36" selection-end-line="63" selection-end-column="36" />
+              <folding>
+                <marker date="1422230161000" expanded="true" signature="2263:2505" placeholder="{...}" />
+                <marker date="1422230161000" expanded="true" signature="2519:2553" placeholder="{...}" />
+                <marker date="1422230161000" expanded="true" signature="2566:2871" placeholder="{...}" />
+                <marker date="1422230161000" expanded="true" signature="2900:2959" placeholder="{...}" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -76,22 +81,21 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/Commands.java" />
+        <option value="$PROJECT_DIR$/.idea/workspace.xml" />
+        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/CSftp.java" />
+        <option value="$PROJECT_DIR$/Commands.java" />
       </list>
     </option>
   </component>
   <component name="JsGulpfileManager">
     <detection-done>true</detection-done>
   </component>
-  <component name="MavenProjectNavigator">
-    <treeState />
-  </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="10" />
-    <option name="y" value="42" />
-    <option name="width" value="1260" />
-    <option name="height" value="682" />
+    <option name="x" value="4" />
+    <option name="y" value="23" />
+    <option name="width" value="1276" />
+    <option name="height" value="777" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -138,6 +142,20 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cs317_a1_h2b9_z3w8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cs317_a1_h2b9_z3w8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value=".idea" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -153,18 +171,28 @@
     <property name="recentsLimit" value="5" />
     <property name="restartRequiresConfirmation" value="true" />
     <property name="dynamic.classpath" value="false" />
-    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors.Font" />
-    <property name="options.splitter.main.proportions" value="0.3" />
-    <property name="options.splitter.details.proportions" value="0.2" />
-    <property name="project.structure.last.edited" value="Project" />
-    <property name="project.structure.proportion" value="0.15" />
-    <property name="project.structure.side.proportion" value="0.0" />
   </component>
   <component name="RunManager" selected="Application.Unnamed">
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
       <option name="PROGRAM_PARAMETERS" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Specs2RunConfiguration" factoryName="Specs2">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <extension name="scalaCoverage" />
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <envs />
       <method />
     </configuration>
     <configuration default="true" type="Remote" factoryName="Remote">
@@ -217,6 +245,9 @@
       <option name="VM_PARAMETERS" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
+      <method />
+    </configuration>
+    <configuration default="true" type="NodeJSConfigurationType" factoryName="Node.js" working-dir="">
       <method />
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
@@ -373,6 +404,38 @@
       <envs />
       <method />
     </configuration>
+    <configuration default="true" type="uTestRunConfiguration" factoryName="utest">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <extension name="scalaCoverage" />
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="ScalaTestRunConfiguration" factoryName="ScalaTest">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
+      <extension name="scalaCoverage" />
+      <module name="" />
+      <setting name="path" value="" />
+      <setting name="package" value="" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workingDirectory" value="$PROJECT_DIR$" />
+      <setting name="searchForTest" value="Across module dependencies" />
+      <setting name="testName" value="" />
+      <setting name="testKind" value="Class" />
+      <setting name="showProgressMessages" value="true" />
+      <envs />
+      <method />
+    </configuration>
     <configuration default="true" type="AndroidRunConfigurationType" factoryName="Android Application">
       <module name="" />
       <option name="ACTIVITY_CLASS" value="" />
@@ -417,21 +480,21 @@
   <component name="ShelveChangesManager" show_recycled="false" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="9548b257-1422-4dc2-b938-40051fa39e80" name="Default" comment="" />
-      <created>1421973121643</created>
+      <changelist id="f6d88d4a-1de5-42c7-9190-d4fe693f1b60" name="Default" comment="" />
+      <created>1422223453825</created>
       <option name="number" value="Default" />
-      <updated>1421973121643</updated>
-      <workItem from="1421973124411" duration="1470000" />
-      <workItem from="1422166070311" duration="6712000" />
-      <workItem from="1422219499052" duration="666000" />
+      <updated>1422223453825</updated>
+      <workItem from="1422223454556" duration="1060000" />
+      <workItem from="1422225140155" duration="3700000" />
+      <workItem from="1422229794565" duration="355000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="8848000" />
+    <option name="totallyTimeSpent" value="5115000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="10" y="42" width="1260" height="682" extended-state="0" />
+    <frame x="4" y="23" width="1276" height="777" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -441,27 +504,30 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24959481" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32952693" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298217" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24920635" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24959481" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.329927" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.39967373" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.329927" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
+  </component>
+  <component name="UnknownFeatures">
+    <option featureType="com.intellij.fileTypeFactory" implementationName="*.gitignore" />
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
@@ -490,8 +556,78 @@
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/CSftp.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="214" max-vertical-offset="705">
-          <caret line="32" column="25" selection-start-line="32" selection-start-column="25" selection-end-line="32" selection-end-column="25" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="289" max-vertical-offset="720">
+          <caret line="38" column="33" selection-start-line="38" selection-start-column="33" selection-end-line="38" selection-end-column="33" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="960" max-vertical-offset="1080">
+          <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Commands.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1965">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1422230161000" expanded="true" signature="2263:2505" placeholder="{...}" />
+            <marker date="1422230161000" expanded="true" signature="2519:2553" placeholder="{...}" />
+            <marker date="1422230161000" expanded="true" signature="2566:2871" placeholder="{...}" />
+            <marker date="1422230161000" expanded="true" signature="2900:2959" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CSftp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="334" max-vertical-offset="765">
+          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="990" max-vertical-offset="1095">
+          <caret line="66" column="18" selection-start-line="66" selection-start-column="18" selection-end-line="66" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Commands.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1575">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1422230161000" expanded="true" signature="2263:2505" placeholder="{...}" />
+            <marker date="1422230161000" expanded="true" signature="2519:2553" placeholder="{...}" />
+            <marker date="1422230161000" expanded="true" signature="2566:2871" placeholder="{...}" />
+            <marker date="1422230161000" expanded="true" signature="2900:2959" placeholder="{...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="423" max-vertical-offset="1080">
+          <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/CSftp.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="289" max-vertical-offset="720">
+          <caret line="38" column="33" selection-start-line="38" selection-start-column="33" selection-end-line="38" selection-end-column="33" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -500,80 +636,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/Commands.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1470">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.913242" vertical-offset="285" max-vertical-offset="2040">
+          <caret line="63" column="36" selection-start-line="63" selection-start-column="36" selection-end-line="63" selection-end-column="36" />
           <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/src.zip!/java/lang/Enum.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2797" max-vertical-offset="3375">
-          <caret line="236" column="0" selection-start-line="236" selection-start-column="0" selection-end-line="236" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1050">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CSftp.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="75" max-vertical-offset="540">
-          <caret line="31" column="0" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1050">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1050">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.7.0_45.jdk/Contents/Home/src.zip!/java/lang/Enum.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="4.6814623" vertical-offset="1192" max-vertical-offset="3375">
-          <caret line="236" column="0" selection-start-line="236" selection-start-column="0" selection-end-line="236" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/CSftp.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="240" max-vertical-offset="705">
-          <caret line="36" column="37" selection-start-line="36" selection-start-column="37" selection-end-line="36" selection-end-column="37" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Commands.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7441253" vertical-offset="90" max-vertical-offset="1470">
-          <caret line="25" column="21" selection-start-line="25" selection-start-column="21" selection-end-line="25" selection-end-column="21" />
-          <folding>
-            <element signature="imports" expanded="true" />
+            <marker date="1422230161000" expanded="true" signature="2263:2505" placeholder="{...}" />
+            <marker date="1422230161000" expanded="true" signature="2519:2553" placeholder="{...}" />
+            <marker date="1422230161000" expanded="true" signature="2566:2871" placeholder="{...}" />
+            <marker date="1422230161000" expanded="true" signature="2900:2959" placeholder="{...}" />
           </folding>
         </state>
       </provider>
