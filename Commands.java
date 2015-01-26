@@ -15,6 +15,8 @@ public final class Commands {
     private static Socket controlCxn;
     private static DataOutputStream serverOut;
     private static Thread receiveserver;
+    private static ServerMessages sm;
+
 
     public static int parseInput(String cmd) {
         ArrayList<String> args = new ArrayList<String>();
@@ -94,12 +96,12 @@ public final class Commands {
         }
         else {
            port = 21;
-        }
+
         try {
             controlCxn = new Socket(hostName, port);
             serverOut =
                     new DataOutputStream(controlCxn.getOutputStream());
-            ServerMessages sm = new ServerMessages(
+            sm = new ServerMessages(
                     new BufferedReader(
                             new InputStreamReader(controlCxn.getInputStream())));
         receiveserver = new Thread(sm);
