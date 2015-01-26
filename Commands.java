@@ -1,4 +1,5 @@
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -14,15 +15,16 @@ public final class Commands {
     private static Socket controlCxn;
     private static BufferedReader serverIn;
     private static PrintWriter serverOut;
+    private static int countRead = 0;
 
     public static int parseInput(String cmd) {
         ArrayList<String> args = new ArrayList<String>();
-        int firstindex = 0;
+        int firstIndex = 0;
         for (int i=0; i < cmd.length(); i++) {
            if ((cmd.charAt(i) == ' ') || (cmd.charAt(i) == '\n')) {
-               args.add(cmd.substring(firstindex,i));
+               args.add(cmd.substring(firstIndex,i));
                i = ++i;
-               firstindex = i;
+               firstIndex = i;
            }
 
 
@@ -43,7 +45,7 @@ public final class Commands {
                     userCmd();
                     break;
                 case CLOSE:
-                    closeCmd();
+                    closeCmd(args);
                     break;
                 case QUIT:
                     quitCmd();
@@ -112,9 +114,24 @@ public final class Commands {
 
         return 0;
     }
-    public static int closeCmd() {
-
-        return 0;
+    public static int closeCmd(ArrayList<String> args) {
+        /*if(args.size() > 1){
+            return -1;
+        }*/
+        if(!args.get(0).equalsIgnoreCase("close")){
+            return -1;
+        }
+        else{
+            try {
+                serverIn.close();
+                serverOut.close();
+                controlCxn.close();
+                countRead = 0;
+            } catch (IOException e) {
+                System.err.println(e.getCause());
+            }
+            return 0;
+        }
     }
     public static int quitCmd() {
 
@@ -124,14 +141,18 @@ public final class Commands {
         if (serverIn == null) {
             return;
         }
-        try {
-            System.out.println(serverIn.readLine());
-
-        }
-        catch (Exception e) {
-            System.err.println(e.getCause());
+        else if(countRead > 0){
             return;
         }
+        countRead++;
+            try {
+                System.out.println(serverIn.readLine());
+
+            } catch (Exception e) {
+                System.err.println(e.getCause());
+                return;
+            }
+
         return;
 
     }

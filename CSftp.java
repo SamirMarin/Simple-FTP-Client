@@ -6,6 +6,7 @@ import java.lang.System;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.Buffer;
+import java.util.Arrays;
 
 //
 // This is an implementation of a simplified version of a command 
@@ -19,10 +20,12 @@ public class CSftp
 	public static void main(String [] args)
 	{
 		byte cmdString[] = new byte[MAX_LEN];
+
 		int len;
 		String cmd;
 		try {
 			while (true) {
+				Arrays.fill(cmdString, (byte) 0);
 				System.out.print("csftp> ");
 				len = System.in.read(cmdString);
 				if (len <= 0)
