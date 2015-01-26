@@ -6,6 +6,7 @@ import java.lang.System;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.Buffer;
+import java.util.Arrays;
 
 //
 // This is an implementation of a simplified version of a command 
@@ -30,13 +31,13 @@ public class CSftp
 				cmd = new String(cmdString, "UTF-8");
 
 
-
-				Commands.parseInput(cmd); // returns an Array of strings
+				Commands.parseInput(cmd);
+				Arrays.fill(cmdString, (byte) 0);
 				// Start processing the command here.
-				Commands.readInput();
-			}
+				}
 		} catch (IOException exception) {
 			System.err.println("898 Input error while reading commands, terminating.");
 		}
 	}
-}
+
+	}
