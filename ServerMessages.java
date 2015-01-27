@@ -1,21 +1,43 @@
+import com.sun.corba.se.spi.activation.Server;
+
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
 
 /**
  * Created by rohinpatel on 15-01-25.
  */
 public class ServerMessages implements Runnable{
 
-    public ServerMessages(BufferedReader in) {
-        serverIn = in;
-    }
     private BufferedReader serverIn;
+
+    public ServerMessages(Socket socket) {
+        try {
+            serverIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        } catch (IOException e) {
+
+        }
+    }
+//    public ServerMessages getInstance(Socket socket) {
+//        if (sm == null) {
+//            sm = new ServerMessages(socket);
+//        }
+//                    return sm;
+//
+//    }
+    String output;
+
     public void readInput() {
         if (getServerIn() == null) {
             return;
         }
         try {
-                System.out.println(getServerIn().readLine());
 
+                    while ((output = getServerIn().readLine()) != null) {
+                        System.out.println(output);
+                        //FTPPanel.getInstance().handleMessage(output);
+                }
 
         }
         catch (Exception e) {
@@ -26,11 +48,11 @@ public class ServerMessages implements Runnable{
 
     }
 
+
     @Override
     public void run() {
         while (true) {
             readInput();
-            System.out.print("csftp> ");
         }
     }
     public BufferedReader getServerIn() {
@@ -40,4 +62,13 @@ public class ServerMessages implements Runnable{
     public void setServerIn(BufferedReader serverIn) {
         this.serverIn = serverIn;
     }
+
+    public String getOutput() {
+        return output;
+    }
+
+    public void setOutput(String output) {
+        this.output = output;
+    }
+
 }
