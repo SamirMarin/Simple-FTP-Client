@@ -17,24 +17,6 @@ public final class Commands {
     private static PrintWriter serverOut;
     private static int countRead = 0;
 
-    public static int parseInput(String cmd) {
-        ArrayList<String> args = new ArrayList<String>();
-        int firstIndex = 0;
-        for (int i=0; i < cmd.length(); i++) {
-           if ((cmd.charAt(i) == ' ') || (cmd.charAt(i) == '\n')) {
-               args.add(cmd.substring(firstIndex,i));
-               i = ++i;
-               firstIndex = i;
-           }
-
-
-        }
-        handleCommand(args);
-        return 0;
-
-    }
-
-
     public static int handleCommand(ArrayList<String> args) {
         try {
             switch (CommandStrings.valueOf(args.get(0).toUpperCase())) {
@@ -60,14 +42,15 @@ public final class Commands {
                     break;
 
             }
-            } catch(Exception e){
-                System.out.println("800 Invalid Command");
-                return -1;
-            }
+        } catch(Exception e){
+            System.out.println("800 Invalid FTPCommand");
+            return -1;
+        }
 
         return 0;
-
     }
+
+
     public static int openCmd(ArrayList<String> args) {
         if (controlCxn != null) {
             System.out.println("Already connected to server, please quit before connecting to another server");
@@ -99,11 +82,9 @@ public final class Commands {
         System.out.println("Made it this far");
         try {
             controlCxn = new Socket(hostName, port);
-            serverOut =
-                    new PrintWriter(controlCxn.getOutputStream(), true);
-            serverIn =
-                    new BufferedReader(
-                            new InputStreamReader(controlCxn.getInputStream()));
+            serverOut = new PrintWriter(controlCxn.getOutputStream(), true);
+            serverIn = new BufferedReader(new InputStreamReader(System.in));
+            readInput();
         }
         catch (Exception e) {
             System.out.println(e.getMessage());
@@ -138,15 +119,13 @@ public final class Commands {
         return 0;
     }
     public static void readInput() {
-        if (serverIn == null) {
-            return;
-        }
-        else if(countRead > 0){
-            return;
-        }
-        countRead++;
-            try {
-                System.out.println(serverIn.readLine());
+        try {
+            System.out.println(serverIn.readLine());
+            String userInput;
+            while ((userInput = serverIn.readLine()) != null) {
+                serverOut.println(userInput);
+                //System.out.println("echo: " + in.readLine());
+            }
 
             } catch (Exception e) {
                 System.err.println(e.getCause());
