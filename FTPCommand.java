@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 /**
  * Created by samirmarin on 15-01-26.
@@ -98,10 +99,18 @@ public class FTPCommand {
         sendLine("PASV");
         String response = readLine();
         System.out.println(response);
+        int startIndex = response.indexOf("(") + 1;
+        int endIndex = response.indexOf(")", startIndex+1) - 1;
+        String responseIpPort = response.substring(startIndex, endIndex);
+        String ip = getIpAdress(responseIpPort);
+        int port = getPort(responseIpPort);
+        Socket dataSocket = new Socket(ip, port);
         sendLine("LIST");
-        String responseList = readLine();
-        System.out.println(responseList);
+        System.out.println(readLine());
+
+
     }
+
     private synchronized String readLine() throws IOException {
         String line = reader.readLine();
         return line;
@@ -121,6 +130,21 @@ public class FTPCommand {
             }
         }
 
+    }
+
+    private String getIpAdress(String message){
+        StringTokenizer ipString = new StringTokenizer(message, ",");
+        return ipString.nextToken() + "." + ipString.nextToken() + "." + ipString.nextToken() + "." + ipString.nextToken();
+
+    }
+
+    private int getPort(String message){
+        StringTokenizer portString = new StringTokenizer(message, ",");
+        for(int i = 0; i < 3; i++){
+            portString.nextToken();
+        }
+        int port = Integer.parseInt(portString.nextToken()) * 256 + Integer.parseInt(portString.nextToken());
+        return port;
     }
 
 
