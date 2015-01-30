@@ -100,7 +100,7 @@ public class FTPCommand {
         String response = readLine();
         System.out.println(response);
         int startIndex = response.indexOf("(") + 1;
-        int endIndex = response.indexOf(")", startIndex+1) - 1;
+        int endIndex = response.indexOf(")", startIndex+1);
         String responseIpPort = response.substring(startIndex, endIndex);
         String ip = getIpAdress(responseIpPort);
         int port = getPort(responseIpPort);
@@ -140,10 +140,10 @@ public class FTPCommand {
 
     private int getPort(String message){
         StringTokenizer portString = new StringTokenizer(message, ",");
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < 4; i++){
             portString.nextToken();
         }
-        int port = Integer.parseInt(portString.nextToken()) * 256 + Integer.parseInt(portString.nextToken());
+        int port = (Integer.parseInt(portString.nextToken()) * 256) + Integer.parseInt(portString.nextToken());
         return port;
     }
 
