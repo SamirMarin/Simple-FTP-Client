@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -11,6 +12,7 @@ public class FTPCommand {
     private Socket socket;
     private BufferedReader reader;
     private BufferedWriter writer;
+    Socket dataSocket;
     /*
     * add instance of FTP Command
     * */
@@ -98,14 +100,23 @@ public class FTPCommand {
     public synchronized void dirCmd() throws IOException {
         sendLine("PASV");
         String response = readLine();
+        if (!response.contains("227")) {
+            System.out.println("Invalid command");
+            System.out.println(response);
+            return;
+        }
         System.out.println(response);
         int startIndex = response.indexOf("(") + 1;
-        int endIndex = response.indexOf(")", startIndex+1) - 1;
+        int endIndex = response.indexOf(")", startIndex+1);
         String responseIpPort = response.substring(startIndex, endIndex);
         String ip = getIpAdress(responseIpPort);
         int port = getPort(responseIpPort);
-        Socket dataSocket = new Socket(ip, port);
+        System.out.println(port);
+       dataSocket =  new Socket(InetAddress.getByName(ip), port);
+        BufferedReader datareader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
+        DataOutputStream datawriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
         sendLine("LIST");
+        System.out.println(datareader.readLine());
         System.out.println(readLine());
 
 
@@ -113,6 +124,7 @@ public class FTPCommand {
 
     private synchronized String readLine() throws IOException {
         String line = reader.readLine();
+        System.out.println("--> " + line);
         return line;
     }
 
@@ -124,6 +136,7 @@ public class FTPCommand {
             try {
                 writer.write(message+ "\r\n");
                 writer.flush();
+                System.out.println("<-- " + message);
             } catch (IOException e) {
                 socket= null;
                 throw e;
@@ -140,10 +153,14 @@ public class FTPCommand {
 
     private int getPort(String message){
         StringTokenizer portString = new StringTokenizer(message, ",");
-        for(int i = 0; i < 3; i++){
+        for(int i = 0; i < 4; i++){
             portString.nextToken();
         }
-        int port = Integer.parseInt(portString.nextToken()) * 256 + Integer.parseInt(portString.nextToken());
+
+        int hiOrderBit = Integer.parseInt(portString.nextToken());
+        int lowOrderBit = Integer.parseInt(portString.nextToken());
+        System.out.println(hiOrderBit + " " + lowOrderBit);
+        int port = (hiOrderBit * 256) + lowOrderBit;
         return port;
     }
 
