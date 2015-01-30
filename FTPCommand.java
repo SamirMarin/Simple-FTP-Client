@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 /**
  * Created by samirmarin on 15-01-26.
@@ -45,6 +46,7 @@ public class FTPCommand {
         System.out.println(response);
         if(response.startsWith("331 ")){
             //  open up standard input
+            System.out.print("csftp> ");
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
             String password = null;
@@ -75,6 +77,40 @@ public class FTPCommand {
         }
 
     }
+
+    public synchronized void changeDicCmd(String directory) throws IOException {
+        /*//get working directory of server.
+        String workingDir = null;
+        sendLine("PWD");
+        String response = readLine();
+        if(response.startsWith("257 ")){
+            int indexStart = response.indexOf('\"');
+            int indexEnd = response.indexOf('\"', indexStart+1) +1;
+            if ((indexStart != -1) &&(indexEnd != -1)){
+                workingDir = response.substring(indexStart, indexEnd);
+            }
+        }*/
+        sendLine("CWD " + directory);
+        String dirResponse = readLine();
+        System.out.println(dirResponse);
+    }
+
+    public synchronized void dirCmd() throws IOException {
+        sendLine("PASV");
+        String response = readLine();
+        System.out.println(response);
+        int startIndex = response.indexOf("(") + 1;
+        int endIndex = response.indexOf(")", startIndex+1) - 1;
+        String responseIpPort = response.substring(startIndex, endIndex);
+        String ip = getIpAdress(responseIpPort);
+        int port = getPort(responseIpPort);
+        Socket dataSocket = new Socket(ip, port);
+        sendLine("LIST");
+        System.out.println(readLine());
+
+
+    }
+
     private synchronized String readLine() throws IOException {
         String line = reader.readLine();
         return line;
@@ -94,6 +130,21 @@ public class FTPCommand {
             }
         }
 
+    }
+
+    private String getIpAdress(String message){
+        StringTokenizer ipString = new StringTokenizer(message, ",");
+        return ipString.nextToken() + "." + ipString.nextToken() + "." + ipString.nextToken() + "." + ipString.nextToken();
+
+    }
+
+    private int getPort(String message){
+        StringTokenizer portString = new StringTokenizer(message, ",");
+        for(int i = 0; i < 3; i++){
+            portString.nextToken();
+        }
+        int port = Integer.parseInt(portString.nextToken()) * 256 + Integer.parseInt(portString.nextToken());
+        return port;
     }
 
 
