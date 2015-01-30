@@ -45,6 +45,7 @@ public class FTPCommand {
         System.out.println(response);
         if(response.startsWith("331 ")){
             //  open up standard input
+            System.out.print("csftp> ");
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
             String password = null;
@@ -74,6 +75,32 @@ public class FTPCommand {
            socket = null;
         }
 
+    }
+
+    public synchronized void changeDicCmd(String directory) throws IOException {
+        /*//get working directory of server.
+        String workingDir = null;
+        sendLine("PWD");
+        String response = readLine();
+        if(response.startsWith("257 ")){
+            int indexStart = response.indexOf('\"');
+            int indexEnd = response.indexOf('\"', indexStart+1) +1;
+            if ((indexStart != -1) &&(indexEnd != -1)){
+                workingDir = response.substring(indexStart, indexEnd);
+            }
+        }*/
+        sendLine("CWD " + directory);
+        String dirResponse = readLine();
+        System.out.println(dirResponse);
+    }
+
+    public synchronized void dirCmd() throws IOException {
+        sendLine("PASV");
+        String response = readLine();
+        System.out.println(response);
+        sendLine("LIST");
+        String responseList = readLine();
+        System.out.println(responseList);
     }
     private synchronized String readLine() throws IOException {
         String line = reader.readLine();

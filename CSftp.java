@@ -67,6 +67,24 @@ public class CSftp
 						System.out.println("801 Incorrect number of argumets");
 					}
 				}
+				else if(stringList.get(0).equalsIgnoreCase("cd")){
+					int length = stringList.size();
+					if(length < 2 || length > 3){
+						System.out.println("801 Incorrect number of arguments");
+					}
+					else{
+						command.changeDicCmd(stringList.get(1));
+					}
+				}
+				else if(stringList.get(0).equalsIgnoreCase("dir")){
+					int length = stringList.size();
+					if(length == 1){
+						command.dirCmd();
+					}
+					else{
+						System.out.println("801 Incorrect number of arguments");
+					}
+				}
 
 			}
 		} catch (IOException exception) {
