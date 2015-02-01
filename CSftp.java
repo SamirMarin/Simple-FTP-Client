@@ -27,14 +27,8 @@ public class CSftp
 
 		try {
 			while (true) {
-				Arrays.fill(cmdString, (byte) 0);
-				System.out.print("csftp> ");
-				len = System.in.read(cmdString);
-				if (len <= 0)
-					break;
-				cmd = new String(cmdString, "UTF-8");
 
-
+			    cmd = command.readUserInput();
 				ArrayList<String> stringList = parseInput(cmd); // returns an Array of strings
 
 				if(stringList.get(0).equalsIgnoreCase("open")){

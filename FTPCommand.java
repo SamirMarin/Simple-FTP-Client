@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
@@ -12,12 +14,29 @@ public class FTPCommand {
     private Socket socket;
     private BufferedReader reader;
     private BufferedWriter writer;
+    private boolean isOpen;
+    int MAX_LEN = 255;
     Socket dataSocket;
+    byte cmdString[] = new byte[MAX_LEN];
     /*
     * add instance of FTP Command
     * */
     public FTPCommand(){
 
+    }
+    public synchronized String readUserInput() {
+        System.out.print("csftp> ");
+        Arrays.fill(cmdString, (byte) 0);
+        String cmd;
+        try {
+            System.in.read(cmdString);
+            cmd = new String(cmdString, "UTF-8");
+            return cmd;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return "800 try again";
     }
 
     /**
@@ -29,15 +48,22 @@ public class FTPCommand {
     }
 
     public synchronized void open(String host, int port) throws IOException {
-        if(socket != null){
+        if(isOpen){
             System.out.println("already connected to server. Please disconnect.");
         }
         else{
+            isOpen = true;
             socket = new Socket(host, port);
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             String response = readLine();
             System.out.println(response);
+            if (response.contains("220 ")) {
+                System.out.println("Enter a user name");
+                String cmd = readUserInput();
+                user(cmd);
+
+            }
 
         }
     }
@@ -48,17 +74,16 @@ public class FTPCommand {
         System.out.println(response);
         if(response.startsWith("331 ")){
             //  open up standard input
-            System.out.print("csftp> ");
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+            System.out.println("Please enter a password");
 
-            String password = null;
+            String password;
             boolean notRead = true;
 
             //  read the username from the command-line; need to use try/catch with the
             //  readLine() method
             while(notRead) {
                 try {
-                    password = br.readLine();
+                    password = readUserInput();
                     notRead = false;
                 } catch (IOException ioe) {
                     System.out.println("IO error trying to read your password try again!");
@@ -74,12 +99,22 @@ public class FTPCommand {
     public synchronized void quit() throws IOException {
         try {
             sendLine("QUIT");
+            isOpen = false;
         }finally {
            socket = null;
         }
 
     }
 
+    public synchronized void close() throws IOException {
+        try {
+            sendLine("QUIT");
+            isOpen = false;
+        }finally {
+            socket = null;
+        }
+
+    }
     public synchronized void changeDicCmd(String directory) throws IOException {
         /*//get working directory of server.
         String workingDir = null;
@@ -124,6 +159,10 @@ public class FTPCommand {
 
     private synchronized String readLine() throws IOException {
         String line = reader.readLine();
+        if (line.contains("220: ")) {
+            System.out.print("Please enter user name: ");
+            readUserInput();
+        }
         System.out.println("--> " + line);
         return line;
     }
