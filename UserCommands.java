@@ -60,6 +60,27 @@ public class UserCommands {
         FTPPanel.getInstance().sendInput("USER " + args.get(1));
         return 0;
     }
+    public synchronized void dirCmd() {
+        FTPPanel.getInstance().sendInput("PASV");
+    }
+    private synchronized void createDataConnection(String response, String cmd) throws IOException{
+        System.out.println(response);
+        int startIndex = response.indexOf("(") + 1;
+        int endIndex = response.indexOf(")", startIndex+1);
+        String responseIpPort = response.substring(startIndex, endIndex);
+        String ip = getIpAdress(responseIpPort);
+        int port = getPort(responseIpPort);
+        System.out.println(port);
+        try {
+            dataSocket = new Socket(InetAddress.getByName(ip), port);
+            BufferedReader datareader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
+            DataOutputStream datawriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
+            sendLine(cmd);
+            writeOutput(datareader.readLine());
+        } catch (Exception e) {
+           writeOutput(e.getMessage());
+        }
+    }
 
     public synchronized void printOutPut(String output) {
         System.out.print(output);
