@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public class UserCommands {
 
 
-    public int openCmd(ArrayList<String> args) {
+    public synchronized int openCmd(ArrayList<String> args) {
         if (FTPPanel.getInstance().getControlCxn() != null) {
             System.out.println("Already connected to server, please quit before connecting to another server");
             return -1; // NOT WORKING YET
@@ -48,7 +48,7 @@ public class UserCommands {
 
         return 0;
     }
-    public int userCmd(ArrayList<String> args) {
+    public synchronized int userCmd(ArrayList<String> args) {
         if (args.size() != 2) {
             System.out.println("Too few arguments");
             return -1;
@@ -57,16 +57,15 @@ public class UserCommands {
             return -1;
         }
 
-        System.out.print(args.get(0).toUpperCase().concat(" ").concat(args.get(1)).concat("\n"));
-        FTPPanel.getInstance().sendInput(args.get(0).toUpperCase().concat(" ").concat(args.get(1)).concat("\r\n"));
+        FTPPanel.getInstance().sendInput("USER " + args.get(1));
 
         return 0;
     }
-    public int closeCmd() {
+    public synchronized int closeCmd() {
 
         return 0;
     }
-    public int quitCmd() {
+    public synchronized int quitCmd() {
 
         return 0;
     }

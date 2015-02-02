@@ -28,15 +28,15 @@ public class ServerMessages implements Runnable{
 //    }
     String output;
 
-    public void readInput() {
+    public synchronized void readInput() {
         if (getServerIn() == null) {
             return;
         }
         try {
 
                     while ((output = getServerIn().readLine()) != null) {
-                        System.out.println(output);
-                        //FTPPanel.getInstance().handleMessage(output);
+                        FTPPanel.getInstance().printOutPut(output);
+
                 }
 
         }
@@ -50,7 +50,7 @@ public class ServerMessages implements Runnable{
 
 
     @Override
-    public void run() {
+    public synchronized void run() {
         while (true) {
             readInput();
         }
