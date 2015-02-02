@@ -35,7 +35,12 @@ public class ServerMessages implements Runnable{
         try {
 
                     while (getServerIn().ready()) {
-                        FTPPanel.getInstance().getUc().printOutPut(getServerIn().readLine());
+                        output = getServerIn().readLine();
+                        FTPPanel.getInstance().getUc().printOutput(output);
+                        if (output.contains("227 ")) {
+
+                            FTPPanel.getInstance().getUc().createDataConnection(output, "LIST");
+                        }
 
                 }
 

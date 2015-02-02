@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -61,9 +62,10 @@ public class UserCommands {
         return 0;
     }
     public synchronized void dirCmd() {
+
         FTPPanel.getInstance().sendInput("PASV");
     }
-    private synchronized void createDataConnection(String response, String cmd) throws IOException{
+    public synchronized void createDataConnection(String response, String cmd) {
         System.out.println(response);
         int startIndex = response.indexOf("(") + 1;
         int endIndex = response.indexOf(")", startIndex+1);
@@ -76,13 +78,13 @@ public class UserCommands {
             BufferedReader datareader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
             DataOutputStream datawriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
             sendLine(cmd);
-            writeOutput(datareader.readLine());
+            printOutput(datareader.readLine());
         } catch (Exception e) {
-           writeOutput(e.getMessage());
+           printOutput(e.getMessage());
         }
     }
 
-    public synchronized void printOutPut(String output) {
+    public synchronized void printOutput(String output) {
         System.out.print(output);
     }
     public synchronized int closeCmd() {
