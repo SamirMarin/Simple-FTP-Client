@@ -58,8 +58,11 @@ public class UserCommands {
         }
 
         FTPPanel.getInstance().sendInput("USER " + args.get(1));
-
         return 0;
+    }
+
+    public synchronized void printOutPut(String output) {
+        System.out.print(output);
     }
     public synchronized int closeCmd() {
 

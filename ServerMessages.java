@@ -34,8 +34,8 @@ public class ServerMessages implements Runnable{
         }
         try {
 
-                    while ((output = getServerIn().readLine()) != null) {
-                        FTPPanel.getInstance().printOutPut(output);
+                    while (getServerIn().ready()) {
+                        FTPPanel.getInstance().getUc().printOutPut(getServerIn().readLine());
 
                 }
 

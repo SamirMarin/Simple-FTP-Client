@@ -17,6 +17,11 @@ import java.util.concurrent.locks.ReentrantLock;
 public class FTPPanel implements Runnable, Lock{
 
     int MAX_LEN = 255;
+
+    public UserCommands getUc() {
+        return uc;
+    }
+
     private UserCommands uc = new UserCommands();
     private ServerMessages sm;
     private static Socket datacxn;
@@ -51,9 +56,6 @@ public class FTPPanel implements Runnable, Lock{
     }
 
 
-    public synchronized void printOutPut(String output) {
-        System.out.print(output);
-    }
 
     public synchronized static FTPPanel getInstance() {
        if (ftp == null)  {
@@ -139,7 +141,7 @@ public class FTPPanel implements Runnable, Lock{
     }
     public synchronized boolean setupControlCxn(String hostname, int port) {
         try {
-            this.controlCxn = new Socket(hostname, port);
+            controlCxn = new Socket(hostname, port);
             serverOut = new PrintWriter(controlCxn.getOutputStream(), true);
             sm = new ServerMessages(controlCxn);
             server = new Thread(sm);
@@ -154,7 +156,7 @@ public class FTPPanel implements Runnable, Lock{
 
     public synchronized static void sendInput(String cmd) {
         try {
-            serverOut.write(cmd);
+            serverOut.write(cmd + "\n");
             serverOut.flush();
         }
         catch (Exception e) {
@@ -170,7 +172,7 @@ public class FTPPanel implements Runnable, Lock{
     @Override
     public synchronized void run() {
         while (true) {
-            printOutPut(prompt);
+            uc.printOutPut(prompt);
             String cmd = readInput();
             parseInput(cmd);
         }
