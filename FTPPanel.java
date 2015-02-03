@@ -30,9 +30,6 @@ public class FTPPanel{
     int len;
     private boolean isOpen = false;
     private boolean startProg = false;
-
-
-    private final Lock lock = new ReentrantLock();
     private volatile boolean running = true;
 
     private FTPPanel () {
@@ -126,20 +123,22 @@ public class FTPPanel{
     public synchronized String readLine() {
         String line = null;
         try {
-            ArrayList<String> responses = new ArrayList<String>();
-            int i = 0;
-            while ((line = serverIn.readLine()) != null) {
-                    printOutput("<-- " + line);
-                    responses.add(i, line);
-                    i++;
-            }
-            String listString = "";
-            for (String s: responses) {
-                    listString += s + "\n";
-            }
-            return listString;
-
-            }
+//            ArrayList<String> responses = new ArrayList<String>();
+//            int i = 0;
+            line = serverIn.readLine();
+            printOutput("<-- " + line);
+//                    responses.add(i, line);
+//                    i++;
+//            }
+//            String listString = "";
+//            for (String s: responses) {
+//                    listString += s + "\n";
+//            }
+//            return listString;
+//
+//            }
+            return line;
+        }
         catch (IOException e) {
             System.out.println(e.getMessage());
 
@@ -150,9 +149,6 @@ public class FTPPanel{
             System.out.print(prompt);
     }
 
-    public Socket getControlCxn() {
-        return controlCxn;
-    }
 
     public synchronized void run() {
         while (true) {

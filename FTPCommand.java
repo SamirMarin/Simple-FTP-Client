@@ -142,10 +142,6 @@ public class FTPCommand {
 
     private synchronized String readLine() throws IOException {
         String line = reader.readLine();
-        if (line.contains("220: ")) {
-            System.out.print("Please enter user name: ");
-            readUserInput();
-        }
         System.out.println("--> " + line);
         return line;
     }
