@@ -86,7 +86,7 @@ public class FTPPanel implements Runnable, Lock{
 
     }
 
-    public synchronized int handleCommand(ArrayList<String> args) throws IOException {
+    public synchronized void handleCommand(ArrayList<String> args) throws IOException {
         try {
             switch (CommandStrings.valueOf(args.get(0).toUpperCase())) {
                 case OPEN:
@@ -117,10 +117,10 @@ public class FTPPanel implements Runnable, Lock{
             }
         } catch(Exception e){
             System.out.println("800 Invalid Command");
-            return -1;
+            return;
         }
 
-        return 0;
+        return;
 
     }
     public void handleMessage(String output) {
@@ -157,6 +157,7 @@ public class FTPPanel implements Runnable, Lock{
 
     public synchronized void sendInput(String cmd) {
         try {
+            printOutput("-->" + cmd);
             serverOut.write(cmd + "\n");
             serverOut.flush();
         }
@@ -169,7 +170,8 @@ public class FTPPanel implements Runnable, Lock{
         String line;
         try {
             line = serverIn.readLine();
-            return line;
+           printOutput("<--" + line);
+            return line + "\n";
 
             }
         catch (IOException e) {
@@ -179,7 +181,7 @@ public class FTPPanel implements Runnable, Lock{
         return null;
     }
     public synchronized void printPrompt() {
-            System.out.println(prompt);
+            System.out.print(prompt);
     }
 
     public Socket getControlCxn() {
@@ -189,26 +191,26 @@ public class FTPPanel implements Runnable, Lock{
     @Override
     public synchronized void run() {
         while (true) {
-            printOutput(prompt);
+            printPrompt();
             String firstInput = readInput();
             ArrayList<String> args = parseInput(firstInput);
             if (args.get(0).equalsIgnoreCase("open")) {
                 try {
                     handleCommand(args);
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    printOutput(e.getMessage());
                 }
                 if (isOpen()) {
                     startProg = true;
                 }
             }
             else {
-                System.out.println("803 Supplied command not expected at this time.");
+                printOutput("803 Supplied command not expected at this time.");
                 continue;
             }
             while (startProg) {
                 synchronized (this) {
-                    printOutput(prompt);
+                    printPrompt();
                     String cmd = readInput();
                     args = parseInput(cmd);
                     try {
@@ -221,7 +223,7 @@ public class FTPPanel implements Runnable, Lock{
     }
     }
     public synchronized void printOutput(String output) {
-        System.out.print(output);
+        System.out.println(output);
     }
     public boolean isOpen() {
         return isOpen;

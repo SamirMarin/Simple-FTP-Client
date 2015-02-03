@@ -48,7 +48,7 @@ public class UserCommands {
            if  (FTPPanel.getInstance().setupControlCxn(hostName, port)) {
             System.out.println("Connected to " + args.get(1));
                FTPPanel.getInstance().setOpen(true);
-               System.out.println(FTPPanel.getInstance().readLine());
+               FTPPanel.getInstance().readLine();
         }
         else {
                return;
@@ -66,6 +66,15 @@ public class UserCommands {
         }
 
         FTPPanel.getInstance().sendInput("USER " + args.get(1));
+        String response = FTPPanel.getInstance().readLine();
+        if (response.contains("331 ")) {
+            System.out.print("Please enter a password: ");
+            String input = FTPPanel.getInstance().readInput();
+            args.set(0, "PASS");
+            args.set(1, input);
+            passCmd(args);
+            FTPPanel.getInstance().readLine();
+        }
 
         return;
     }
@@ -81,14 +90,21 @@ public class UserCommands {
     }
     public synchronized void dirCmd() {
         FTPPanel.getInstance().sendInput("PASV");
+        String response = FTPPanel.getInstance().readLine();
+        if (!response.contains("227 ")){
+            FTPPanel.getInstance().printOutput("899 Processing Error");
+            return;
+        }
+        createDataConnection(response, "LIST");
 
+        return;
 
     }
     public synchronized void createDataConnection(String response, String cmd) {
         int startIndex = response.indexOf("(") + 1;
         int endIndex = response.indexOf(")", startIndex+1);
         String responseIpPort = response.substring(startIndex, endIndex);
-        String ip = getIpAdress(responseIpPort);
+        String ip = getIpAddress(responseIpPort);
         int port = getPort(responseIpPort);
         System.out.println(port);
         try {
@@ -96,8 +112,10 @@ public class UserCommands {
             dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
             dataWriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
             FTPPanel.getInstance().sendInput(cmd);
-            // need to create while loop;
-            FTPPanel.getInstance().printOutput(dataReader.readLine() + "\n");
+            String output;
+            while ((output = dataReader.readLine()) != null) {
+                FTPPanel.getInstance().printOutput(output);
+            }
             dataSocket.close();
         } catch (Exception e) {
            FTPPanel.getInstance().printOutput(e.getMessage());
@@ -105,7 +123,7 @@ public class UserCommands {
 
     }
 
-    private String getIpAdress(String message){
+    private String getIpAddress(String message){
         StringTokenizer ipString = new StringTokenizer(message, ",");
         return ipString.nextToken() + "." + ipString.nextToken() + "." + ipString.nextToken() + "." + ipString.nextToken();
 
