@@ -111,22 +111,6 @@ public class FTPCommand {
         }
 
     }
-    public synchronized void changeDicCmd(String directory) throws IOException {
-        /*//get working directory of server.
-        String workingDir = null;
-        sendLine("PWD");
-        String response = readLine();
-        if(response.startsWith("257 ")){
-            int indexStart = response.indexOf('\"');
-            int indexEnd = response.indexOf('\"', indexStart+1) +1;
-            if ((indexStart != -1) &&(indexEnd != -1)){
-                workingDir = response.substring(indexStart, indexEnd);
-            }
-        }*/
-        sendLine("CWD " + directory);
-        String dirResponse = readLine();
-        System.out.println(dirResponse);
-    }
 
     public synchronized void dirCmd() throws IOException {
         sendLine("PASV");

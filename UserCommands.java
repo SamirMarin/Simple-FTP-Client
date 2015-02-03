@@ -12,23 +12,25 @@ import java.util.StringTokenizer;
 public class UserCommands {
 
     private Socket dataSocket;
+    private BufferedReader dataReader;
+    private DataOutputStream dataWriter;
 
-    public synchronized int openCmd(ArrayList<String> args) throws IOException {
-        if (FTPPanel.getInstance().getControlCxn() != null) {
+    public synchronized void openCmd(ArrayList<String> args) throws IOException {
+        if (FTPPanel.getInstance().isOpen()) {
             System.out.println("Already connected to server, please quit before connecting to another server");
-            return -1; // NOT WORKING YET
+            return;
         }
         if (args.size() < 2) {
             System.out.println("801 Incorrect number of arguments");
-            return -1;
+            return;
         }
 
         if (!args.get(0).equalsIgnoreCase("open")) {
-            return -1;
+            return;
         }
         String hostName = args.get(1);
 
-        int port=21;
+        int port;
         if(args.size() == 3){
           try {
                port = Integer.parseInt(args.get(2));
@@ -46,25 +48,26 @@ public class UserCommands {
            if  (FTPPanel.getInstance().setupControlCxn(hostName, port)) {
             System.out.println("Connected to " + args.get(1));
                FTPPanel.getInstance().setOpen(true);
+               System.out.println(FTPPanel.getInstance().readLine());
         }
         else {
-               return -1;
+               return;
            }
 
-        return 0;
+        return;
     }
-    public synchronized int userCmd(ArrayList<String> args) {
+    public synchronized void userCmd(ArrayList<String> args) {
         if (args.size() != 2) {
             System.out.println("Too few arguments");
-            return -1;
+            return;
         }
         if (!args.get(0).equalsIgnoreCase("user")) {
-            return -1;
+            return;
         }
 
         FTPPanel.getInstance().sendInput("USER " + args.get(1));
 
-        return 0;
+        return;
     }
     public synchronized void passCmd(ArrayList<String> args) {
         if (args.size() != 2) {
@@ -77,11 +80,16 @@ public class UserCommands {
         FTPPanel.getInstance().sendInput("PASS " + args.get(1));
     }
     public synchronized void dirCmd() {
-
-
         FTPPanel.getInstance().sendInput("PASV");
+    }
 
 
+    public synchronized void changeDicCmd(ArrayList<String> args){
+        if(args.size() == 2) {
+            String directory = args.get(0).toUpperCase();
+            FTPPanel.getInstance().sendInput("CWD " + directory);
+            FTPPanel.getInstance().readLine();
+        }
     }
     public synchronized void createDataConnection(String response, String cmd) {
         int startIndex = response.indexOf("(") + 1;
@@ -92,13 +100,14 @@ public class UserCommands {
         System.out.println(port);
         try {
             dataSocket = new Socket(InetAddress.getByName(ip), port);
-            BufferedReader datareader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
-            DataOutputStream datawriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
+            dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
+            dataWriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
             FTPPanel.getInstance().sendInput(cmd);
-            printOutput(datareader.readLine() + "\n");
+            // need to create while loop;
+            FTPPanel.getInstance().printOutput(dataReader.readLine() + "\n");
             dataSocket.close();
         } catch (Exception e) {
-           printOutput(e.getMessage());
+           FTPPanel.getInstance().printOutput(e.getMessage());
         }
 
     }
@@ -122,9 +131,7 @@ public class UserCommands {
         return port;
     }
 
-    public synchronized void printOutput(String output) {
-        System.out.print(output);
-    }
+
     public synchronized int closeCmd() {
 
         return 0;
