@@ -64,6 +64,8 @@ public class FTPPanel implements Runnable, Lock{
 
 
 
+
+
     public synchronized static FTPPanel getInstance() {
        if (ftp == null)  {
            ftp = new FTPPanel();
@@ -149,9 +151,6 @@ public class FTPPanel implements Runnable, Lock{
             throw new IOException("820 Control Connection to " + hostname + " on port " + port + " failed to open");
         }
             serverOut = new PrintWriter(controlCxn.getOutputStream(), true);
-            sm = new ServerMessages(controlCxn);
-            server = new Thread(sm);
-            server.start();
             return true;
 
     }
@@ -174,7 +173,6 @@ public class FTPPanel implements Runnable, Lock{
         return controlCxn;
     }
 
-    @Override
     public synchronized void run() {
         while (true) {
             uc.printOutput(prompt);
