@@ -112,12 +112,15 @@ public class FTPCommand {
         String ip = getIpAdress(responseIpPort);
         int port = getPort(responseIpPort);
         System.out.println(port);
-       dataSocket =  new Socket(InetAddress.getByName(ip), port);
+        dataSocket =  new Socket(InetAddress.getByName(ip), port);
         BufferedReader datareader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
-        DataOutputStream datawriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
+        //DataOutputStream datawriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
         sendLine("LIST");
         System.out.println(datareader.readLine());
-        System.out.println(readLine());
+        readLine();
+        datareader.close();
+        readLine();
+        //System.out.println(response);
 
 
     }
