@@ -14,8 +14,6 @@ public class FTPCommand {
     private Socket socket;
     private BufferedReader reader;
     private BufferedWriter writer;
-    private boolean loggedIn;
-
     private boolean isOpen;
     int MAX_LEN = 255;
     Socket dataSocket;
@@ -74,28 +72,28 @@ public class FTPCommand {
         sendLine("USER " + userName);
         String response = readLine();
         System.out.println(response);
-        if(response.contains("331 ")){
+        if(response.startsWith("331 ")){
             //  open up standard input
             System.out.println("Please enter a password");
 
             String password;
-            boolean isRead=true;
+            boolean notRead = true;
+
             //  read the username from the command-line; need to use try/catch with the
             //  readLine() method
-            while(isRead) {
-                password = readUserInput();
-                passCmd(password);
-                isRead=false;
+            while(notRead) {
+                try {
+                    password = readUserInput();
+                    notRead = false;
+                } catch (IOException ioe) {
+                    System.out.println("IO error trying to read your password try again!");
+                }
             }
+            sendLine("PASS " + password);
+            response = readLine();
+            System.out.println(response);
 
         }
-
-    }
-    public synchronized void passCmd(String password) throws IOException {
-
-        sendLine("PASS " + password);
-        writeOutput(readLine());
-        return;
 
     }
     public synchronized void quit() throws IOException {
@@ -111,10 +109,6 @@ public class FTPCommand {
     public synchronized void close() throws IOException {
         try {
             sendLine("QUIT");
-            writeOutput(readLine());
-            socket.close();
-            reader.close();
-            writer.close();
             isOpen = false;
         }finally {
             socket = null;
@@ -139,32 +133,38 @@ public class FTPCommand {
     }
 
     public synchronized void dirCmd() throws IOException {
-        String response = pasvCmd();
-        if (response == null) {
-            writeOutput("Failed to issue command");
-            return;
-        }
-        createDataConnection(response, "LIST");
-        sendLine("LIST");
-        writeOutput(readLine());
-
-    }
-    private synchronized String pasvCmd() throws IOException{
         sendLine("PASV");
         String response = readLine();
-        writeOutput(response);
         if (!response.contains("227")) {
             System.out.println("Invalid command");
             System.out.println(response);
-            return null;
+            return;
         }
-        return response;
+        System.out.println(response);
+        int startIndex = response.indexOf("(") + 1;
+        int endIndex = response.indexOf(")", startIndex+1);
+        String responseIpPort = response.substring(startIndex, endIndex);
+        String ip = getIpAdress(responseIpPort);
+        int port = getPort(responseIpPort);
+        System.out.println(port);
+       dataSocket =  new Socket(InetAddress.getByName(ip), port);
+        BufferedReader datareader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
+        DataOutputStream datawriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
+        sendLine("LIST");
+        System.out.println(datareader.readLine());
+        System.out.println(readLine());
+
+
     }
 
-    public synchronized String readLine() throws IOException {
+    private synchronized String readLine() throws IOException {
         String line = reader.readLine();
-
-        return "--> " + line;
+        if (line.contains("220: ")) {
+            System.out.print("Please enter user name: ");
+            readUserInput();
+        }
+        System.out.println("--> " + line);
+        return line;
     }
 
     private synchronized void sendLine(String message) throws IOException {
@@ -173,9 +173,9 @@ public class FTPCommand {
         }
         else{
             try {
-                writer.write(message + "\n");
+                writer.write(message+ "\r\n");
                 writer.flush();
-                writeOutput("<-- " + message);
+                System.out.println("<-- " + message);
             } catch (IOException e) {
                 socket= null;
                 throw e;
@@ -183,33 +183,11 @@ public class FTPCommand {
         }
 
     }
-    public void writeOutput(String message) {
-        System.out.println(message);
-
-    }
 
     private String getIpAdress(String message){
         StringTokenizer ipString = new StringTokenizer(message, ",");
         return ipString.nextToken() + "." + ipString.nextToken() + "." + ipString.nextToken() + "." + ipString.nextToken();
 
-    }
-    private synchronized void createDataConnection(String response, String cmd) throws IOException{
-        System.out.println(response);
-        int startIndex = response.indexOf("(") + 1;
-        int endIndex = response.indexOf(")", startIndex+1);
-        String responseIpPort = response.substring(startIndex, endIndex);
-        String ip = getIpAdress(responseIpPort);
-        int port = getPort(responseIpPort);
-        System.out.println(port);
-        try {
-            dataSocket = new Socket(InetAddress.getByName(ip), port);
-            BufferedReader datareader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
-            DataOutputStream datawriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
-            sendLine(cmd);
-            writeOutput(datareader.readLine());
-        } catch (Exception e) {
-           writeOutput(e.getMessage());
-        }
     }
 
     private int getPort(String message){
@@ -225,8 +203,5 @@ public class FTPCommand {
         return port;
     }
 
-    public boolean isOpen() {
-        return isOpen;
-    }
 
 }
