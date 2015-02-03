@@ -76,18 +76,14 @@ public class FTPCommand {
             //  open up standard input
             System.out.println("Please enter a password");
 
-            String password;
+            String password = null;
             boolean notRead = true;
 
             //  read the username from the command-line; need to use try/catch with the
             //  readLine() method
             while(notRead) {
-                try {
-                    password = readUserInput();
-                    notRead = false;
-                } catch (IOException ioe) {
-                    System.out.println("IO error trying to read your password try again!");
-                }
+                password = readUserInput();
+                notRead = false;
             }
             sendLine("PASS " + password);
             response = readLine();
