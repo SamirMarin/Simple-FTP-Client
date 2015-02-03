@@ -30,9 +30,6 @@ public class FTPPanel{
     int len;
     private boolean isOpen = false;
     private boolean startProg = false;
-
-
-    private final Lock lock = new ReentrantLock();
     private volatile boolean running = true;
 
     private FTPPanel () {
@@ -98,22 +95,7 @@ public class FTPPanel{
         return;
 
     }
-    public void handleMessage(String output) {
 
-                ArrayList<String> args = new ArrayList<String>();
-                if (output.contains("227 ")) {
-                    uc.createDataConnection(output, "LIST");
-                }
-                else if (output.contains("220 ")) {
-                    System.out.print("Please enter username: ");
-                    String user = readInput();
-                    args.add(1, user);
-                    uc.userCmd(args);
-                }
-
-        return;
-
-    }
     public synchronized boolean setupControlCxn(String hostname, int port) throws IOException{
         try {
             controlCxn = new Socket(hostname, port);
@@ -142,38 +124,33 @@ public class FTPPanel{
     public synchronized String readLine() {
         String line = null;
         try {
-            ArrayList<String> responses = new ArrayList<String>();
-            int i = 0;
-            while ((line = serverIn.readLine()) != null) {
-                    printOutput("<-- " + line);
-                    responses.add(i, line);
-                    i++;
-            }
-            String listString = "";
-            for (String s: responses) {
-                    listString += s + "\n";
-            }
-            return listString;
-
-            }
+//            ArrayList<String> responses = new ArrayList<String>();
+//            int i = 0;
+            line = serverIn.readLine();
+            printOutput("<-- " + line);
+//                    responses.add(i, line);
+//                    i++;
+//            }
+//            String listString = "";
+//            for (String s: responses) {
+//                    listString += s + "\n";
+//            }
+//            return listString;
+//
+//            }
+            return line;
+        }
         catch (IOException e) {
             System.out.println(e.getMessage());
 
         }
         return null;
     }
-<<<<<<< HEAD
-=======
     public synchronized void printPrompt() {
             System.out.print(prompt);
     }
 
-    public Socket getControlCxn() {
-        return controlCxn;
-    }
 
-    @Override
->>>>>>> 0ab4f65abb3e03544fadb14c1e0fa4a033a53b2c
     public synchronized void run() {
         while (true) {
             printPrompt();
