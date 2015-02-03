@@ -1,7 +1,4 @@
 
-import java.lang.System;
-import java.io.IOException;
-import java.util.Arrays;
 
 //
 // This is an implementation of a simplified version of a command 
@@ -18,8 +15,6 @@ public class CSftp
 		FTPPanel ftp = FTPPanel.getInstance();
 		Thread main = new Thread(ftp.getInstance());
 		main.start();
-
-
 
 				// Start processing the command here.
 				}
