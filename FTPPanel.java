@@ -1,8 +1,5 @@
 
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -29,6 +26,7 @@ public class FTPPanel implements Runnable, Lock{
     private static Socket datacxn;
     private static Socket controlCxn;
     private static PrintWriter serverOut;
+    private static BufferedReader serverIn;
     private Thread server;
     private static FTPPanel ftp;
     private byte cmdString[] = new byte[MAX_LEN];
@@ -149,14 +147,15 @@ public class FTPPanel implements Runnable, Lock{
             throw new IOException("820 Control Connection to " + hostname + " on port " + port + " failed to open");
         }
             serverOut = new PrintWriter(controlCxn.getOutputStream(), true);
-            sm = new ServerMessages(controlCxn);
-            server = new Thread(sm);
-            server.start();
+            serverIn = new BufferedReader(new InputStreamReader(controlCxn.getInputStream()));
+           // sm = new ServerMessages(controlCxn);
+            //server = new Thread(sm);
+            //server.start();
             return true;
 
     }
 
-    public synchronized static void sendInput(String cmd) {
+    public synchronized void sendInput(String cmd) {
         try {
             serverOut.write(cmd + "\n");
             serverOut.flush();
@@ -165,6 +164,19 @@ public class FTPPanel implements Runnable, Lock{
             System.out.println(e.getMessage());
 
         }
+    }
+    public synchronized String readLine() {
+        String line;
+        try {
+            line = serverIn.readLine();
+            return line;
+
+            }
+        catch (IOException e) {
+            System.out.println(e.getMessage());
+
+        }
+        return null;
     }
     public synchronized void printPrompt() {
             System.out.println(prompt);
@@ -177,7 +189,7 @@ public class FTPPanel implements Runnable, Lock{
     @Override
     public synchronized void run() {
         while (true) {
-            uc.printOutput(prompt);
+            printOutput(prompt);
             String firstInput = readInput();
             ArrayList<String> args = parseInput(firstInput);
             if (args.get(0).equalsIgnoreCase("open")) {
@@ -196,7 +208,7 @@ public class FTPPanel implements Runnable, Lock{
             }
             while (startProg) {
                 synchronized (this) {
-                    uc.printOutput(prompt);
+                    printOutput(prompt);
                     String cmd = readInput();
                     args = parseInput(cmd);
                     try {
@@ -208,7 +220,9 @@ public class FTPPanel implements Runnable, Lock{
             }
     }
     }
-
+    public synchronized void printOutput(String output) {
+        System.out.print(output);
+    }
     public boolean isOpen() {
         return isOpen;
     }
