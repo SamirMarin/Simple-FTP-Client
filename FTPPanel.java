@@ -98,22 +98,6 @@ public class FTPPanel{
         return;
 
     }
-    public void handleMessage(String output) {
-
-                ArrayList<String> args = new ArrayList<String>();
-                if (output.contains("227 ")) {
-                    uc.createDataConnection(output, "LIST");
-                }
-                else if (output.contains("220 ")) {
-                    System.out.print("Please enter username: ");
-                    String user = readInput();
-                    args.add(1, user);
-                    uc.userCmd(args);
-                }
-
-        return;
-
-    }
     public synchronized boolean setupControlCxn(String hostname, int port) throws IOException{
         try {
             controlCxn = new Socket(hostname, port);
@@ -153,8 +137,6 @@ public class FTPPanel{
         }
         return null;
     }
-<<<<<<< HEAD
-=======
     public synchronized void printPrompt() {
             System.out.print(prompt);
     }
@@ -163,8 +145,6 @@ public class FTPPanel{
         return controlCxn;
     }
 
-    @Override
->>>>>>> 0ab4f65abb3e03544fadb14c1e0fa4a033a53b2c
     public synchronized void run() {
         while (true) {
             printPrompt();
@@ -226,5 +206,13 @@ public class FTPPanel{
     }
     public UserCommands getUc() {
         return uc;
+    }
+
+    public boolean isStartProg() {
+        return startProg;
+    }
+
+    public void setStartProg(boolean startProg) {
+        this.startProg = startProg;
     }
 }

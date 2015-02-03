@@ -103,7 +103,19 @@ public class UserCommands {
             FTPPanel.getInstance().readLine();
         }
     }
-    public synchronized void createDataConnection(String response, String cmd) {
+
+
+    public synchronized void quitCmd() throws IOException {
+        try {
+            FTPPanel.getInstance().sendInput("QUIT");
+            FTPPanel.getInstance().readLine();
+        }finally {
+            FTPPanel.getInstance().setOpen(false);
+            FTPPanel.getInstance().setStartProg(false);
+        }
+
+    }
+    private synchronized void createDataConnection(String response, String cmd) {
         int startIndex = response.indexOf("(") + 1;
         int endIndex = response.indexOf(")", startIndex+1);
         String responseIpPort = response.substring(startIndex, endIndex);
@@ -119,7 +131,8 @@ public class UserCommands {
             while ((output = dataReader.readLine()) != null) {
                 FTPPanel.getInstance().printOutput(output);
             }
-            dataSocket.close();
+
+            dataReader.close();
         } catch (Exception e) {
            FTPPanel.getInstance().printOutput(e.getMessage());
         }
@@ -150,10 +163,4 @@ public class UserCommands {
 
         return 0;
     }
-    public synchronized int quitCmd() {
-
-        return 0;
-    }
-
-
 }
