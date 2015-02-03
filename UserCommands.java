@@ -94,6 +94,18 @@ public class UserCommands {
             return;
         }
         createDataConnection(response, "LIST");
+        FTPPanel.getInstance().readLine();
+
+        try {
+            dataReader.close();
+            dataWriter.close();
+            dataSocket.close();
+        }
+        catch (IOException e) {
+
+        }
+        return;
+
     }
 
     public synchronized void changeDicCmd(ArrayList<String> args){
@@ -132,7 +144,6 @@ public class UserCommands {
                 FTPPanel.getInstance().printOutput(output);
             }
 
-            dataReader.close();
         } catch (Exception e) {
            FTPPanel.getInstance().printOutput(e.getMessage());
         }
