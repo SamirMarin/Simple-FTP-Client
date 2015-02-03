@@ -179,6 +179,7 @@ public class UserCommands {
                     byte[] buffer = new byte[4096];
                     //byteArrayInputStream = new ByteArrayInputStream(buffer);
                     InputStream fileRead = openFile(userIput.trim());
+                    fileRead.available();
                     BufferedInputStream input = new BufferedInputStream(fileRead);
                     FTPPanel.getInstance().sendInput(cmd + userIput);
                     FTPPanel.getInstance().readLine();
