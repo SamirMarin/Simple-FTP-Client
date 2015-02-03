@@ -76,18 +76,14 @@ public class FTPCommand {
             //  open up standard input
             System.out.println("Please enter a password");
 
-            String password;
+            String password = null;
             boolean notRead = true;
 
             //  read the username from the command-line; need to use try/catch with the
             //  readLine() method
             while(notRead) {
-                try {
-                    password = readUserInput();
-                    notRead = false;
-                } catch (IOException ioe) {
-                    System.out.println("IO error trying to read your password try again!");
-                }
+                password = readUserInput();
+                notRead = false;
             }
             sendLine("PASS " + password);
             response = readLine();
@@ -147,12 +143,15 @@ public class FTPCommand {
         String ip = getIpAdress(responseIpPort);
         int port = getPort(responseIpPort);
         System.out.println(port);
-       dataSocket =  new Socket(InetAddress.getByName(ip), port);
+        dataSocket =  new Socket(InetAddress.getByName(ip), port);
         BufferedReader datareader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
-        DataOutputStream datawriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
+        //DataOutputStream datawriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
         sendLine("LIST");
         System.out.println(datareader.readLine());
-        System.out.println(readLine());
+        readLine();
+        datareader.close();
+        readLine();
+        //System.out.println(response);
 
 
     }
@@ -195,7 +194,6 @@ public class FTPCommand {
         for(int i = 0; i < 4; i++){
             portString.nextToken();
         }
-
         int hiOrderBit = Integer.parseInt(portString.nextToken());
         int lowOrderBit = Integer.parseInt(portString.nextToken());
         System.out.println(hiOrderBit + " " + lowOrderBit);
