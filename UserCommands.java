@@ -15,6 +15,7 @@ public class UserCommands {
     private BufferedReader dataReader;
     private DataOutputStream dataWriter;
     private ByteArrayInputStream byteArrayInputStream;
+    private InputStream file;
 
     public synchronized void openCmd(ArrayList<String> args) throws IOException {
         if (FTPPanel.getInstance().isOpen()) {
@@ -180,33 +181,37 @@ public class UserCommands {
         while (System.currentTimeMillis() < end) {  // try for 30 seconds
             try {
                 dataSocket = new Socket(InetAddress.getByName(ip), port);
+                break;
+            } catch (Exception e) {
+                FTPPanel.getInstance().printOutput(e.getMessage());
+            }
+        }
+            try {
                 dataWriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
-                if (cmd == "LIST") {
+                if (cmd.equals("LIST")) {
                     dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
                     FTPPanel.getInstance().sendInput(cmd + userInput);
                     String output;
                     while ((output = dataReader.readLine()) != null) {
                         FTPPanel.getInstance().printOutput(output);
                     }
-                } else if (cmd == "STOR") {
+                } else if (cmd.equals("STOR")) {
                     byte[] buffer = new byte[4096];
-                    byteArrayInputStream = new ByteArrayInputStream(buffer);
+                    //byteArrayInputStream = new ByteArrayInputStream(buffer);
+                    InputStream fileRead = openFile(userInput.trim());
+                    BufferedInputStream input = new BufferedInputStream(fileRead);
                     FTPPanel.getInstance().sendInput(cmd + userInput);
                     FTPPanel.getInstance().readLine();
                     int bytesRead = 0;
-                    while ((bytesRead = byteArrayInputStream.read()) != -1) {
+
+                    while ((bytesRead = input.read(buffer)) != -1) {
                         dataWriter.write(buffer, 0, bytesRead);
 
                     }
                 }
-                break;
-
             } catch (Exception e) {
-                FTPPanel.getInstance().printOutput(e.getMessage());
+
             }
-    }
-
-
     }
 
     private String getIpAddress(String message){
@@ -228,8 +233,20 @@ public class UserCommands {
         return port;
     }
 
+    private InputStream openFile(String fileToPass){
+        try {
+             file = new FileInputStream(fileToPass);
+        } catch (FileNotFoundException e) {
+            System.out.println("810 Access to local file XXX denied");
+        }
+        return file;
+    }
+
+        //
+    }
 
 
 
 
-}
+
+
