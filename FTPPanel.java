@@ -112,7 +112,7 @@ public class FTPPanel{
     public synchronized void sendInput(String cmd) {
         try {
             printOutput("--> " + cmd);
-            serverOut.write(cmd + "\n");
+            serverOut.write(cmd + "\r\n");
             serverOut.flush();
         }
         catch (Exception e) {
