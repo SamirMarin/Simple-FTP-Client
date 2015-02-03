@@ -70,9 +70,8 @@ public class UserCommands {
         if (response.contains("331 ")) {
             System.out.print("Please enter a password: ");
             String input = FTPPanel.getInstance().readInput();
-            args.set(0, "PASS");
-            args.set(1, input);
-            passCmd(args);
+            ArrayList<String> args2 = FTPPanel.getInstance().parseInput("PASS " + input);
+            passCmd(args2);
             FTPPanel.getInstance().readLine();
         }
     }
@@ -104,6 +103,7 @@ public class UserCommands {
         catch (IOException e) {
 
         }
+        FTPPanel.getInstance().readLine();
         return;
 
     }
