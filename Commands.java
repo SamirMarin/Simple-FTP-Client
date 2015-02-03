@@ -94,13 +94,14 @@ public final class Commands {
           }
         }
         else {
-           port = 21;
+            port = 21;
         }
+
         try {
             controlCxn = new Socket(hostName, port);
             serverOut = new DataOutputStream(controlCxn.getOutputStream());
             sm = new ServerMessages(new BufferedReader(
-                            new InputStreamReader(controlCxn.getInputStream())));
+                         new InputStreamReader(controlCxn.getInputStream())));
         receiveserver = new Thread(sm);
             receiveserver.start();
         }
