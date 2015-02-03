@@ -15,6 +15,7 @@ public class UserCommands {
     private BufferedReader dataReader;
     private DataOutputStream dataWriter;
     private ByteArrayInputStream byteArrayInputStream;
+    private InputStream file;
 
     public synchronized void openCmd(ArrayList<String> args) throws IOException {
         if (FTPPanel.getInstance().isOpen()) {
@@ -176,12 +177,15 @@ public class UserCommands {
                 }
                 else if(cmd == "STOR"){
                     byte[] buffer = new byte[4096];
-                    byteArrayInputStream = new ByteArrayInputStream(buffer);
+                    //byteArrayInputStream = new ByteArrayInputStream(buffer);
+                    InputStream fileRead = openFile(userIput.trim());
+                    BufferedInputStream input = new BufferedInputStream(fileRead);
                     FTPPanel.getInstance().sendInput(cmd + userIput);
                     FTPPanel.getInstance().readLine();
                     int bytesRead = 0;
-                    while((bytesRead = byteArrayInputStream.read()) != -1){
-                        dataWriter.write(buffer, 0, bytesRead);
+
+                    while((bytesRead = input.read(buffer)) != -1){
+                       dataWriter.write(buffer, 0, bytesRead);
 
                     }
                 }
@@ -213,8 +217,20 @@ public class UserCommands {
         return port;
     }
 
+    private InputStream openFile(String fileToPass){
+        try {
+             file = new FileInputStream(fileToPass);
+        } catch (FileNotFoundException e) {
+            System.out.println("810 Access to local file XXX denied");
+        }
+        return file;
+    }
+
+        //
+    }
 
 
 
 
-}
+
+
