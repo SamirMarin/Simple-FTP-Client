@@ -14,6 +14,7 @@ public class UserCommands {
     private Socket dataSocket;
     private BufferedReader dataReader;
     private DataOutputStream dataWriter;
+    private ByteArrayInputStream byteArrayInputStream;
 
     public synchronized void openCmd(ArrayList<String> args) throws IOException {
         if (FTPPanel.getInstance().isOpen()) {
@@ -104,20 +105,18 @@ public class UserCommands {
 
         }
         FTPPanel.getInstance().readLine();
-        return;
-
     }
 
     public synchronized void changeDicCmd(ArrayList<String> args){
         if(args.size() == 2) {
-            String directory = args.get(0).toUpperCase();
+            String directory = args.get(1);
             FTPPanel.getInstance().sendInput("CWD " + directory);
             FTPPanel.getInstance().readLine();
         }
     }
 
 
-    public synchronized void quitCmd() throws IOException {
+    public synchronized void closeCmd() {
         try {
             FTPPanel.getInstance().sendInput("QUIT");
             FTPPanel.getInstance().readLine();
@@ -125,28 +124,73 @@ public class UserCommands {
             FTPPanel.getInstance().setOpen(false);
             FTPPanel.getInstance().setStartProg(false);
         }
+    }
+
+
+    public synchronized void quitCmd() throws IOException {
+        //need to fill in
 
     }
-    private synchronized void createDataConnection(String response, String cmd) {
+    public synchronized void putCmd(ArrayList<String> args){
+        FTPPanel.getInstance().sendInput("PASV");
+        String response = FTPPanel.getInstance().readLine();
+        if (!response.contains("227 ")) {
+            FTPPanel.getInstance().printOutput("899 Processing Error");
+            return;
+        }
+        createDataConnection(response, "STOR", args.get(1));
+        FTPPanel.getInstance().readLine();
+        try {
+            dataReader.close();
+            dataWriter.close();
+            dataSocket.close();
+        }
+        catch (IOException e) {
+        }
+        FTPPanel.getInstance().readLine();
+    }
+    private  synchronized void createDataConnection(String response, String cmd) {
+        createDataConnection(response, cmd, "");
+    }
+
+    private synchronized void createDataConnection(String response, String cmd, String userIput) {
+        if (userIput != "") {
+            userIput = " " + userIput;
+        }
         int startIndex = response.indexOf("(") + 1;
-        int endIndex = response.indexOf(")", startIndex+1);
+        int endIndex = response.indexOf(")", startIndex + 1);
         String responseIpPort = response.substring(startIndex, endIndex);
         String ip = getIpAddress(responseIpPort);
         int port = getPort(responseIpPort);
         System.out.println(port);
-        try {
-            dataSocket = new Socket(InetAddress.getByName(ip), port);
-            dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
-            dataWriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
-            FTPPanel.getInstance().sendInput(cmd);
-            String output;
-            while ((output = dataReader.readLine()) != null) {
-                FTPPanel.getInstance().printOutput(output);
+            try {
+                dataSocket = new Socket(InetAddress.getByName(ip), port);
+                dataWriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
+                if(cmd == "LIST") {
+                    dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
+                    FTPPanel.getInstance().sendInput(cmd + userIput);
+                    String output;
+                    while ((output = dataReader.readLine()) != null) {
+                        FTPPanel.getInstance().printOutput(output);
+                    }
+                }
+                else if(cmd == "STOR"){
+                    byte[] buffer = new byte[4096];
+                    byteArrayInputStream = new ByteArrayInputStream(buffer);
+                    FTPPanel.getInstance().sendInput(cmd + userIput);
+                    FTPPanel.getInstance().readLine();
+                    int bytesRead = 0;
+                    while((bytesRead = byteArrayInputStream.read()) != -1){
+                        dataWriter.write(buffer, 0, bytesRead);
+
+                    }
+                }
+
+
+            } catch (Exception e) {
+                FTPPanel.getInstance().printOutput(e.getMessage());
             }
 
-        } catch (Exception e) {
-           FTPPanel.getInstance().printOutput(e.getMessage());
-        }
 
     }
 
@@ -170,8 +214,7 @@ public class UserCommands {
     }
 
 
-    public synchronized int closeCmd() {
 
-        return 0;
-    }
+
+
 }

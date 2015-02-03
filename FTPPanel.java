@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Created by rohinpatel on 15-01-26.
  */
-public class FTPPanel{
+public class FTPPanel {
 
     int MAX_LEN = 255;
 
@@ -32,8 +32,10 @@ public class FTPPanel{
     private boolean startProg = false;
     private volatile boolean running = true;
 
+
     private FTPPanel () {
     }
+
 
     public synchronized static FTPPanel getInstance() {
        if (ftp == null)  {
@@ -78,6 +80,7 @@ public class FTPPanel{
                 case GET:
                     break;
                 case PUT:
+                    uc.putCmd(args);
                     break;
                 case CD:
                     uc.changeDicCmd(args);
