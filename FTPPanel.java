@@ -144,7 +144,7 @@ public class FTPPanel implements Runnable, Lock{
             controlCxn = new Socket(hostname, port);
         }
         catch (IOException e) {
-            throw new IOException("820 Control Connection to " + hostname + " on port " + port + " failed to open");
+            printOutput("820 Control Connection to " + hostname + " on port " + port + " failed to open");
         }
             serverOut = new PrintWriter(controlCxn.getOutputStream(), true);
             serverIn = new BufferedReader(new InputStreamReader(controlCxn.getInputStream()));
@@ -157,7 +157,7 @@ public class FTPPanel implements Runnable, Lock{
 
     public synchronized void sendInput(String cmd) {
         try {
-            printOutput("-->" + cmd);
+            printOutput("--> " + cmd);
             serverOut.write(cmd + "\n");
             serverOut.flush();
         }
@@ -167,11 +167,20 @@ public class FTPPanel implements Runnable, Lock{
         }
     }
     public synchronized String readLine() {
-        String line;
+        String line = null;
         try {
-            line = serverIn.readLine();
-           printOutput("<--" + line);
-            return line + "\n";
+            ArrayList<String> responses = new ArrayList<String>();
+            int i = 0;
+            while ((line = serverIn.readLine()) != null) {
+                    printOutput("<-- " + line);
+                    responses.add(i, line);
+                    i++;
+            }
+            String listString = "";
+            for (String s: responses) {
+                    listString += s + "\n";
+            }
+            return listString;
 
             }
         catch (IOException e) {

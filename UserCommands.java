@@ -96,7 +96,16 @@ public class UserCommands {
             return;
         }
         createDataConnection(response, "LIST");
+        FTPPanel.getInstance().readLine();
 
+        try {
+            dataReader.close();
+            dataWriter.close();
+            dataSocket.close();
+        }
+        catch (IOException e) {
+
+        }
         return;
 
     }
@@ -116,7 +125,7 @@ public class UserCommands {
             while ((output = dataReader.readLine()) != null) {
                 FTPPanel.getInstance().printOutput(output);
             }
-            dataSocket.close();
+
         } catch (Exception e) {
            FTPPanel.getInstance().printOutput(e.getMessage());
         }
