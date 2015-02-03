@@ -13,21 +13,17 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Created by rohinpatel on 15-01-26.
  */
-public class FTPPanel implements Runnable, Lock{
+public class FTPPanel{
 
     int MAX_LEN = 255;
 
-    public UserCommands getUc() {
-        return uc;
-    }
 
     private UserCommands uc = new UserCommands();
     private ServerMessages sm;
     private static Socket datacxn;
     private static Socket controlCxn;
-    private static PrintWriter serverOut;
+    private static BufferedWriter serverOut;
     private static BufferedReader serverIn;
-    private Thread server;
     private static FTPPanel ftp;
     private byte cmdString[] = new byte[MAX_LEN];
     private String prompt = "csftp> ";
@@ -40,35 +36,13 @@ public class FTPPanel implements Runnable, Lock{
     private volatile boolean running = true;
 
     private FTPPanel () {
-
     }
-
-    public String readInput() {
-
-        String cmd;
-        Arrays.fill(cmdString, (byte) 0);
-            try {
-                len = System.in.read(cmdString);
-                cmd = new String(cmdString, "UTF-8");
-                return cmd;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        return "800 try again";
-
-
-    }
-
-
 
     public synchronized static FTPPanel getInstance() {
        if (ftp == null)  {
            ftp = new FTPPanel();
-
        }
-        return ftp;
-    }
+        return ftp;}
 
     public synchronized ArrayList<String> parseInput(String cmd) {
         ArrayList<String> args = new ArrayList<String>();
@@ -109,6 +83,7 @@ public class FTPPanel implements Runnable, Lock{
                 case PUT:
                     break;
                 case CD:
+                    uc.changeDicCmd(args);
                     break;
                 case DIR:
                     uc.dirCmd();
@@ -146,11 +121,9 @@ public class FTPPanel implements Runnable, Lock{
         catch (IOException e) {
             printOutput("820 Control Connection to " + hostname + " on port " + port + " failed to open");
         }
-            serverOut = new PrintWriter(controlCxn.getOutputStream(), true);
+
             serverIn = new BufferedReader(new InputStreamReader(controlCxn.getInputStream()));
-           // sm = new ServerMessages(controlCxn);
-            //server = new Thread(sm);
-            //server.start();
+            serverOut = new BufferedWriter(new OutputStreamWriter(controlCxn.getOutputStream()));
             return true;
 
     }
@@ -189,6 +162,8 @@ public class FTPPanel implements Runnable, Lock{
         }
         return null;
     }
+<<<<<<< HEAD
+=======
     public synchronized void printPrompt() {
             System.out.print(prompt);
     }
@@ -198,6 +173,7 @@ public class FTPPanel implements Runnable, Lock{
     }
 
     @Override
+>>>>>>> 0ab4f65abb3e03544fadb14c1e0fa4a033a53b2c
     public synchronized void run() {
         while (true) {
             printPrompt();
@@ -231,6 +207,18 @@ public class FTPPanel implements Runnable, Lock{
             }
     }
     }
+    public String readInput() {
+        String cmd;
+        Arrays.fill(cmdString, (byte) 0);
+        try {
+            len = System.in.read(cmdString);
+            cmd = new String(cmdString, "UTF-8");
+            return cmd;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "800 try again";
+    }
     public synchronized void printOutput(String output) {
         System.out.println(output);
     }
@@ -241,41 +229,11 @@ public class FTPPanel implements Runnable, Lock{
     public void setOpen(boolean isOpen) {
         this.isOpen = isOpen;
     }
-    @Override
-    public void lock() {
-
-    }
-
-    @Override
-    public void lockInterruptibly() throws InterruptedException {
-
-    }
-
-    @Override
-    public boolean tryLock() {
-        return false;
-    }
-
-    @Override
-    public boolean tryLock(long time, TimeUnit unit) throws InterruptedException {
-        return false;
-    }
-
-    @Override
-    public void unlock() {
-
-    }
-
-    public Lock getLock() {
-        return lock;
-    }
-    @Override
-    public Condition newCondition() {
-        return null;
-    }
-
     public enum CommandStrings {
         OPEN, USER, CLOSE, QUIT, GET, PUT, CD, DIR, PASS;
 
+    }
+    public UserCommands getUc() {
+        return uc;
     }
 }

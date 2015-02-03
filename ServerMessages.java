@@ -8,7 +8,7 @@ import java.net.Socket;
 /**
  * Created by rohinpatel on 15-01-25.
  */
-public class ServerMessages implements Runnable{
+public class ServerMessages{
 
     private BufferedReader serverIn;
 
@@ -51,7 +51,6 @@ public class ServerMessages implements Runnable{
     }
 
 
-    @Override
     public synchronized void run() {
         while (true) {
                 readInput();

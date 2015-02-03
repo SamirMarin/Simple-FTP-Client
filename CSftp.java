@@ -13,8 +13,7 @@ public class CSftp
 	public static void main(String [] args)
 	{
 		FTPPanel ftp = FTPPanel.getInstance();
-		Thread main = new Thread(ftp.getInstance());
-		main.start();
+		ftp.run();
 
 				// Start processing the command here.
 				}

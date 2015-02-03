@@ -30,7 +30,7 @@ public class UserCommands {
         }
         String hostName = args.get(1);
 
-        int port=21;
+        int port;
         if(args.size() == 3){
           try {
                port = Integer.parseInt(args.get(2));
@@ -75,8 +75,6 @@ public class UserCommands {
             passCmd(args);
             FTPPanel.getInstance().readLine();
         }
-
-        return;
     }
     public synchronized void passCmd(ArrayList<String> args) {
         if (args.size() != 2) {
@@ -91,7 +89,7 @@ public class UserCommands {
     public synchronized void dirCmd() {
         FTPPanel.getInstance().sendInput("PASV");
         String response = FTPPanel.getInstance().readLine();
-        if (!response.contains("227 ")){
+        if (!response.contains("227 ")) {
             FTPPanel.getInstance().printOutput("899 Processing Error");
             return;
         }
@@ -109,7 +107,15 @@ public class UserCommands {
         return;
 
     }
-    public synchronized void createDataConnection(String response, String cmd) {
+
+    public synchronized void changeDicCmd(ArrayList<String> args){
+        if(args.size() == 2) {
+            String directory = args.get(0).toUpperCase();
+            FTPPanel.getInstance().sendInput("CWD " + directory);
+            FTPPanel.getInstance().readLine();
+        }
+    }
+    private synchronized void createDataConnection(String response, String cmd) {
         int startIndex = response.indexOf("(") + 1;
         int endIndex = response.indexOf(")", startIndex+1);
         String responseIpPort = response.substring(startIndex, endIndex);
