@@ -1,7 +1,9 @@
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 /**
  * Created by rohinpatel on 15-01-24.
@@ -9,8 +11,9 @@ import java.util.ArrayList;
  */
 public class UserCommands {
 
+    private Socket dataSocket;
 
-    public synchronized int openCmd(ArrayList<String> args) {
+    public synchronized int openCmd(ArrayList<String> args) throws IOException {
         if (FTPPanel.getInstance().getControlCxn() != null) {
             System.out.println("Already connected to server, please quit before connecting to another server");
             return -1; // NOT WORKING YET
@@ -42,6 +45,7 @@ public class UserCommands {
         // setup socket
            if  (FTPPanel.getInstance().setupControlCxn(hostName, port)) {
             System.out.println("Connected to " + args.get(1));
+               FTPPanel.getInstance().setOpen(true);
         }
         else {
                return -1;
@@ -59,14 +63,27 @@ public class UserCommands {
         }
 
         FTPPanel.getInstance().sendInput("USER " + args.get(1));
+
         return 0;
+    }
+    public synchronized void passCmd(ArrayList<String> args) {
+        if (args.size() != 2) {
+            System.out.println("Too few arguments");
+            return;
+        }
+        if (!args.get(0).equalsIgnoreCase("pass")) {
+            return;
+        }
+        FTPPanel.getInstance().sendInput("PASS " + args.get(1));
     }
     public synchronized void dirCmd() {
 
+
         FTPPanel.getInstance().sendInput("PASV");
+
+
     }
     public synchronized void createDataConnection(String response, String cmd) {
-        System.out.println(response);
         int startIndex = response.indexOf("(") + 1;
         int endIndex = response.indexOf(")", startIndex+1);
         String responseIpPort = response.substring(startIndex, endIndex);
@@ -77,11 +94,32 @@ public class UserCommands {
             dataSocket = new Socket(InetAddress.getByName(ip), port);
             BufferedReader datareader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
             DataOutputStream datawriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
-            sendLine(cmd);
-            printOutput(datareader.readLine());
+            FTPPanel.getInstance().sendInput(cmd);
+            printOutput(datareader.readLine() + "\n");
+            dataSocket.close();
         } catch (Exception e) {
            printOutput(e.getMessage());
         }
+
+    }
+
+    private String getIpAdress(String message){
+        StringTokenizer ipString = new StringTokenizer(message, ",");
+        return ipString.nextToken() + "." + ipString.nextToken() + "." + ipString.nextToken() + "." + ipString.nextToken();
+
+    }
+
+    private int getPort(String message){
+        StringTokenizer portString = new StringTokenizer(message, ",");
+        for(int i = 0; i < 4; i++){
+            portString.nextToken();
+        }
+
+        int hiOrderBit = Integer.parseInt(portString.nextToken());
+        int lowOrderBit = Integer.parseInt(portString.nextToken());
+        System.out.println(hiOrderBit + " " + lowOrderBit);
+        int port = (hiOrderBit * 256) + lowOrderBit;
+        return port;
     }
 
     public synchronized void printOutput(String output) {

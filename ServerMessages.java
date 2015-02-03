@@ -12,6 +12,7 @@ public class ServerMessages implements Runnable{
 
     private BufferedReader serverIn;
 
+
     public ServerMessages(Socket socket) {
         try {
             serverIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -35,15 +36,12 @@ public class ServerMessages implements Runnable{
         try {
 
                     while (getServerIn().ready()) {
-                        output = getServerIn().readLine();
-                        FTPPanel.getInstance().getUc().printOutput(output);
-                        if (output.contains("227 ")) {
-
-                            FTPPanel.getInstance().getUc().createDataConnection(output, "LIST");
+                        output = null;
+                        if ((output = getServerIn().readLine()) != null) {
+                            FTPPanel.getInstance().getUc().printOutput(output + "\n");
+                            //FTPPanel.getInstance().handleMessage(output);
                         }
-
                 }
-
         }
         catch (Exception e) {
             System.err.println(e.getCause());
@@ -57,7 +55,7 @@ public class ServerMessages implements Runnable{
     @Override
     public synchronized void run() {
         while (true) {
-            readInput();
+                readInput();
         }
     }
     public BufferedReader getServerIn() {

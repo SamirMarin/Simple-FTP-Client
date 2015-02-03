@@ -3,7 +3,9 @@ import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Array;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -32,13 +34,18 @@ public class FTPPanel implements Runnable, Lock{
     private byte cmdString[] = new byte[MAX_LEN];
     private String prompt = "csftp> ";
     int len;
-    private Lock lock = new ReentrantLock();
+    private boolean isOpen = false;
+    private boolean startProg = false;
+
+
+    private final Lock lock = new ReentrantLock();
+    private volatile boolean running = true;
 
     private FTPPanel () {
 
     }
 
-    public synchronized String readInput() {
+    public String readInput() {
 
         String cmd;
         Arrays.fill(cmdString, (byte) 0);
@@ -65,7 +72,7 @@ public class FTPPanel implements Runnable, Lock{
         return ftp;
     }
 
-    public synchronized int parseInput(String cmd) {
+    public synchronized ArrayList<String> parseInput(String cmd) {
         ArrayList<String> args = new ArrayList<String>();
         int firstindex = 0;
         for (int i=0; i < cmd.length(); i++) {
@@ -77,12 +84,11 @@ public class FTPPanel implements Runnable, Lock{
 
 
         }
-        handleCommand(args);
-        return 0;
+        return args;
 
     }
 
-    public synchronized int handleCommand(ArrayList<String> args) {
+    public synchronized int handleCommand(ArrayList<String> args) throws IOException {
         try {
             switch (CommandStrings.valueOf(args.get(0).toUpperCase())) {
                 case OPEN:
@@ -97,6 +103,9 @@ public class FTPPanel implements Runnable, Lock{
                 case QUIT:
                     uc.quitCmd();
                     break;
+                case PASS:
+                    uc.passCmd(args);
+                    break;
                 case GET:
                     break;
                 case PUT:
@@ -104,6 +113,7 @@ public class FTPPanel implements Runnable, Lock{
                 case CD:
                     break;
                 case DIR:
+                    uc.dirCmd();
                     break;
 
             }
@@ -116,41 +126,33 @@ public class FTPPanel implements Runnable, Lock{
 
     }
     public void handleMessage(String output) {
-        System.out.println(output);
-        if (output.contains("220 ")) {
-            String user;
-            System.out.println("Please enter user name: ");
-             byte cmdstr[] = new byte[MAX_LEN];
-                try {
-                    System.in.read(cmdstr);
 
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
-                    return;
+                ArrayList<String> args = new ArrayList<String>();
+                if (output.contains("227 ")) {
+                    uc.createDataConnection(output, "LIST");
+                }
+                else if (output.contains("220 ")) {
+                    System.out.print("Please enter username: ");
+                    String user = readInput();
+                    args.add(1, user);
+                    uc.userCmd(args);
                 }
 
-            user = new String(cmdstr);
-            ArrayList<String> userargs = new ArrayList<String>();
-            userargs.add("USER");
-            userargs.add(user);
-            uc.userCmd(userargs);
-            Arrays.fill(cmdString, (byte) 0);
-            return;
-        }
+        return;
 
     }
-    public synchronized boolean setupControlCxn(String hostname, int port) {
+    public synchronized boolean setupControlCxn(String hostname, int port) throws IOException{
         try {
             controlCxn = new Socket(hostname, port);
+        }
+        catch (IOException e) {
+            throw new IOException("820 Control Connection to " + hostname + " on port " + port + " failed to open");
+        }
             serverOut = new PrintWriter(controlCxn.getOutputStream(), true);
             sm = new ServerMessages(controlCxn);
             server = new Thread(sm);
             server.start();
             return true;
-        } catch (IOException e) {
-            e.getMessage();
-            return false;
-        }
 
     }
 
@@ -164,6 +166,9 @@ public class FTPPanel implements Runnable, Lock{
 
         }
     }
+    public synchronized void printPrompt() {
+            System.out.println(prompt);
+    }
 
     public Socket getControlCxn() {
         return controlCxn;
@@ -172,13 +177,45 @@ public class FTPPanel implements Runnable, Lock{
     @Override
     public synchronized void run() {
         while (true) {
-            uc.printOutPut(prompt);
-            String cmd = readInput();
-            parseInput(cmd);
-        }
-
+            uc.printOutput(prompt);
+            String firstInput = readInput();
+            ArrayList<String> args = parseInput(firstInput);
+            if (args.get(0).equalsIgnoreCase("open")) {
+                try {
+                    handleCommand(args);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+                if (isOpen()) {
+                    startProg = true;
+                }
+            }
+            else {
+                System.out.println("803 Supplied command not expected at this time.");
+                continue;
+            }
+            while (startProg) {
+                synchronized (this) {
+                    uc.printOutput(prompt);
+                    String cmd = readInput();
+                    args = parseInput(cmd);
+                    try {
+                        handleCommand(args);
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }
+    }
     }
 
+    public boolean isOpen() {
+        return isOpen;
+    }
+
+    public void setOpen(boolean isOpen) {
+        this.isOpen = isOpen;
+    }
     @Override
     public void lock() {
 
@@ -204,13 +241,16 @@ public class FTPPanel implements Runnable, Lock{
 
     }
 
+    public Lock getLock() {
+        return lock;
+    }
     @Override
     public Condition newCondition() {
         return null;
     }
 
     public enum CommandStrings {
-        OPEN, USER, CLOSE, QUIT, GET, PUT, CD, DIR;
+        OPEN, USER, CLOSE, QUIT, GET, PUT, CD, DIR, PASS;
 
     }
 }
