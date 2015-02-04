@@ -180,6 +180,7 @@ public class UserCommands {
         String path = FTPPanel.getInstance().concatWithSpaces(args);
         createDataConnection(response);
         try {
+        dataWriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
         byte[] buffer = new byte[64000];
         //byteArrayInputStream = new ByteArrayInputStream(buffer);
         InputStream file = openFile(path.trim());
@@ -219,13 +220,13 @@ public class UserCommands {
         }
         String path = FTPPanel.getInstance().concatWithSpaces(args);
          createDataConnection(response);
-
         FTPPanel.getInstance().sendInput("RETR " + path);
         String retrResp = FTPPanel.getInstance().readLine();
         if (retrResp.contains("550")) {
            return;
         }
         try {
+        dataWriter = new DataOutputStream(new BufferedOutputStream(dataSocket.getOutputStream()));
         dataReaderRetr = new DataInputStream(new BufferedInputStream(dataSocket.getInputStream()));
         FileOutputStream outputFile= new FileOutputStream(path); // need to change
         byte[] buffer = new byte[64000];
