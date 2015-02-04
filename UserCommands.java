@@ -58,6 +58,7 @@ public class UserCommands {
 
         return;
     }
+
     public synchronized void userCmd(ArrayList<String> args) {
         if (args.size() != 2) {
             System.out.println("801 Incorrect number of arguments.");
@@ -66,8 +67,9 @@ public class UserCommands {
         if (!args.get(0).equalsIgnoreCase("user")) {
             return;
         }
+        String user = FTPPanel.getInstance().concatWithSpaces(args);
 
-        FTPPanel.getInstance().sendInput("USER " + args.get(1));
+        FTPPanel.getInstance().sendInput("USER " + user);
         String response = FTPPanel.getInstance().readLine();
         if (response.contains("331 ")) {
             System.out.print("Please enter a password: ");
@@ -78,6 +80,7 @@ public class UserCommands {
         }
         return;
     }
+
     public synchronized void passCmd(ArrayList<String> args) {
         if (args.size() != 2) {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
@@ -88,6 +91,7 @@ public class UserCommands {
         }
         FTPPanel.getInstance().sendInput("PASS " + args.get(1));
     }
+
     public synchronized void dirCmd(ArrayList<String> args) {
         if (args.size() != 1) {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
@@ -118,7 +122,7 @@ public class UserCommands {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
             return;
         }
-            String directory = args.get(1);
+            String directory = FTPPanel.getInstance().concatWithSpaces(args);
             FTPPanel.getInstance().sendInput("CWD " + directory);
             FTPPanel.getInstance().readLine();
     }
@@ -140,8 +144,9 @@ public class UserCommands {
         System.exit(0);
 
     }
+
     public synchronized void putCmd(ArrayList<String> args){
-        if (args.size() != 2) {
+        if (args.size() < 2) {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
             return;
         }
@@ -151,7 +156,8 @@ public class UserCommands {
             FTPPanel.getInstance().printOutput("899 Processing Error");
             return;
         }
-        createDataConnection(response, "STOR", args.get(1));
+        String path = FTPPanel.getInstance().concatWithSpaces(args);
+        createDataConnection(response, "STOR", path);
         FTPPanel.getInstance().readLine();
         try {
             dataReader.close();
@@ -162,6 +168,7 @@ public class UserCommands {
         }
         FTPPanel.getInstance().readLine();
     }
+
     private  synchronized void createDataConnection(String response, String cmd) {
         createDataConnection(response, cmd, "");
     }
@@ -203,7 +210,6 @@ public class UserCommands {
                     FTPPanel.getInstance().sendInput(cmd + userInput);
                     FTPPanel.getInstance().readLine();
                     int bytesRead = 0;
-
                     while ((bytesRead = input.read(buffer)) != -1) {
                         dataWriter.write(buffer, 0, bytesRead);
 

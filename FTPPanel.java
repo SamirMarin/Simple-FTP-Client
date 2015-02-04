@@ -70,6 +70,15 @@ public class FTPPanel {
         return args;
 
     }
+    public synchronized String concatWithSpaces(ArrayList<String> args) {
+        String line = "";
+        for (int i = 1; i < args.size(); i++) {
+            line += args.get(i) + " ";
+
+        }
+        printOutput(line);
+        return line.trim();
+    }
 
     public synchronized void handleCommand(ArrayList<String> args) throws IOException {
         try {
