@@ -56,8 +56,14 @@ public class FTPPanel {
         ArrayList<String> args = new ArrayList<String>();
         int firstindex = 0;
         for (int i=0; i < cmd.length(); i++) {
-            if ((cmd.charAt(i) == ' ') || (cmd.charAt(i) == '\n')) {
-                args.add(cmd.substring(firstindex,i));
+            if(args.size() == 0){
+                args.add(0, "#");
+                return args;
+            }
+            else if ((cmd.charAt(i) == ' ') || (cmd.charAt(i) == '\n')) {
+                if(!((cmd.substring(firstindex, i).equals(" ")) || (cmd.substring(firstindex, i).equals("")))){
+                    args.add(cmd.substring(firstindex,i));
+                }
                 i = ++i;
                 firstindex = i;
             }
@@ -238,6 +244,8 @@ public class FTPPanel {
                     startProg = true;
                 }
             }
+            else if(args.get(0).equals("#"))
+                continue;
             else {
                 printOutput("803 Supplied command not expected at this time.");
                 continue;
