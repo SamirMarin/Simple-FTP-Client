@@ -1,13 +1,8 @@
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
-import sun.misc.IOUtils;
-
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
-import java.util.zip.InflaterInputStream;
 
 /**
  * Created by rohinpatel on 15-01-24.
@@ -61,7 +56,6 @@ public class UserCommands {
                return;
            }
 
-        return;
     }
 
     public synchronized void userCmd(ArrayList<String> args) throws IOException{
@@ -86,7 +80,6 @@ public class UserCommands {
             passCmd(args2);
             FTPPanel.getInstance().readLine();
         }
-        return;
     }
 
     public synchronized void passCmd(ArrayList<String> args)throws IOException {
@@ -264,7 +257,6 @@ public class UserCommands {
             }
         }
 
-        return;
     }
 
     private String getIpAddress(String message){

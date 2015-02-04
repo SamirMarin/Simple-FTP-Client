@@ -1,22 +1,15 @@
 
 import java.io.*;
-import java.lang.reflect.Array;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * Created by rohinpatel on 15-01-26.
@@ -115,8 +108,6 @@ public class FTPPanel {
             return;
         }
 
-        return;
-
     }
     public synchronized boolean setupControlCxn(String hostname, int port) throws IOException{
         try {
@@ -190,7 +181,6 @@ public class FTPPanel {
              //   line += Byte.toString(buf.get(i));
             //}
 
-            return;
         } catch (IOException e) {
 
         }
@@ -304,7 +294,7 @@ public class FTPPanel {
     }
 
     public enum CommandStrings {
-        OPEN, USER, CLOSE, QUIT, GET, PUT, CD, DIR, PASS;
+        OPEN, USER, CLOSE, QUIT, GET, PUT, CD, DIR, PASS
 
     }
 
