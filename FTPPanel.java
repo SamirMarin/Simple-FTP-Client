@@ -1,8 +1,16 @@
 
 import java.io.*;
 import java.lang.reflect.Array;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
@@ -31,7 +39,11 @@ public class FTPPanel {
     private boolean isOpen = false;
     private boolean startProg = false;
     private volatile boolean running = true;
-
+    private String latestRead;
+    ByteBuffer buf = ByteBuffer.allocate(1024);
+    SocketChannel inChannel;
+    Selector selector;
+    SelectionKey key;
 
     private FTPPanel () {
     }
@@ -61,7 +73,8 @@ public class FTPPanel {
 
     public synchronized void handleCommand(ArrayList<String> args) throws IOException {
         try {
-            switch (CommandStrings.valueOf(args.get(0).toUpperCase())) {
+            CommandStrings val = CommandStrings.valueOf(args.get(0).toUpperCase());
+            switch (val) {
                 case OPEN:
                     uc.openCmd(args);
                     break;
@@ -78,6 +91,7 @@ public class FTPPanel {
                     uc.passCmd(args);
                     break;
                 case GET:
+                    uc.getCmd(args);
                     break;
                 case PUT:
                     uc.putCmd(args);
@@ -86,11 +100,11 @@ public class FTPPanel {
                     uc.changeDicCmd(args);
                     break;
                 case DIR:
-                    uc.dirCmd();
+                    uc.dirCmd(args);
                     break;
 
             }
-        } catch(Exception e){
+        } catch(IllegalArgumentException e){
             System.out.println("800 Invalid Command");
             return;
         }
@@ -107,8 +121,24 @@ public class FTPPanel {
         }
 
             serverIn = new BufferedReader(new InputStreamReader(controlCxn.getInputStream()));
+            inChannel = controlCxn.getChannel();
             serverOut = new BufferedWriter(new OutputStreamWriter(controlCxn.getOutputStream()));
             return true;
+
+    }
+    public synchronized boolean setupSocketChannel(String hostname, int port) throws IOException{
+        try {
+            inChannel = SocketChannel.open();
+            inChannel.connect(new InetSocketAddress(hostname, port));
+            selector = Selector.open();
+            inChannel.configureBlocking(false);
+            key = inChannel.register(selector, SelectionKey.OP_READ);
+        }
+        catch (IOException e) {
+            printOutput("820 Control Connection to " + hostname + " on port " + port + " failed to open");
+        }
+
+        return true;
 
     }
 
@@ -126,20 +156,9 @@ public class FTPPanel {
     public synchronized String readLine() {
         String line = null;
         try {
-//            ArrayList<String> responses = new ArrayList<String>();
-//            int i = 0;
             line = serverIn.readLine();
             printOutput("<-- " + line);
-//                    responses.add(i, line);
-//                    i++;
-//            }
-//            String listString = "";
-//            for (String s: responses) {
-//                    listString += s + "\n";
-//            }
-//            return listString;
-//
-//            }
+            latestRead = line;
             return line;
         }
         catch (IOException e) {
@@ -148,10 +167,57 @@ public class FTPPanel {
         }
         return null;
     }
+    public synchronized void readSocketChannel() {
+        try {
+            buf.clear();
+            int bytesRead;
+            String line = "";
+            int totalBytes = 0;
+                bytesRead = inChannel.read(buf);
+            while (bytesRead != -1) {
+
+                buf.flip();
+                CharBuffer cbuf = StandardCharsets.UTF_8.decode(buf);
+                System.out.print(cbuf.toString());
+                buf.clear();
+                bytesRead = inChannel.read(buf);
+            }
+            //for (int i = 0; i <= bytesRead; i++) {
+             //   line += Byte.toString(buf.get(i));
+            //}
+
+            return;
+        } catch (IOException e) {
+
+        }
+    }
     public synchronized void printPrompt() {
             System.out.print(prompt);
     }
+    public synchronized void checkIfTimeOut() {
+        if (latestRead.contains("421 ")) {
+            try {
+                controlCxn.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            setOpen(false);
+            setStartProg(false);
+        }
+    }
 
+    public synchronized void sendSocketChannel(String message) {
+        try {
+            buf.clear();
+            buf.put(message.getBytes());
+            buf.flip();
+            while (buf.hasRemaining()) {
+                inChannel.write(buf);
+            }
+        } catch (IOException e) {
+
+        }
+    }
 
     public synchronized void run() {
         while (true) {
@@ -179,6 +245,7 @@ public class FTPPanel {
                     args = parseInput(cmd);
                     try {
                         handleCommand(args);
+                        checkIfTimeOut();
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
