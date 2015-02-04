@@ -59,7 +59,7 @@ public class UserCommands {
         return;
     }
 
-    public synchronized void userCmd(ArrayList<String> args) {
+    public synchronized void userCmd(ArrayList<String> args) throws IOException{
         if (args.size() != 2) {
             System.out.println("801 Incorrect number of arguments.");
             return;
@@ -74,6 +74,9 @@ public class UserCommands {
         if (response.contains("331 ")) {
             System.out.print("Please enter a password: ");
             String input = FTPPanel.getInstance().readInput();
+            if (input == null){
+                return;
+            }
             ArrayList<String> args2 = FTPPanel.getInstance().parseInput("PASS " + input);
             passCmd(args2);
             FTPPanel.getInstance().readLine();
@@ -81,7 +84,7 @@ public class UserCommands {
         return;
     }
 
-    public synchronized void passCmd(ArrayList<String> args) {
+    public synchronized void passCmd(ArrayList<String> args)throws IOException {
         if (args.size() != 2) {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
             return;
@@ -117,7 +120,7 @@ public class UserCommands {
         FTPPanel.getInstance().readLine();
     }
 
-    public synchronized void changeDicCmd(ArrayList<String> args){
+    public synchronized void changeDicCmd(ArrayList<String> args)throws IOException{
         if (args.size() != 2) {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
             return;
@@ -128,10 +131,13 @@ public class UserCommands {
     }
 
 
-    public synchronized void closeCmd() {
+    public synchronized void closeCmd()throws IOException {
         try {
             FTPPanel.getInstance().sendInput("QUIT");
             FTPPanel.getInstance().readLine();
+            FTPPanel.getInstance().getServerIn().close();
+            FTPPanel.getInstance().getServerOut().close();
+            FTPPanel.getInstance().getControlCxn().close();
         }finally {
             FTPPanel.getInstance().setOpen(false);
             FTPPanel.getInstance().setStartProg(false);
@@ -150,6 +156,8 @@ public class UserCommands {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
             return;
         }
+        FTPPanel.getInstance().sendInput("TYPE I");
+        FTPPanel.getInstance().readLine();
         FTPPanel.getInstance().sendInput("PASV");
         String response = FTPPanel.getInstance().readLine();
         if (!response.contains("227 ")) {
@@ -182,7 +190,6 @@ public class UserCommands {
         String responseIpPort = response.substring(startIndex, endIndex);
         String ip = getIpAddress(responseIpPort);
         int port = getPort(responseIpPort);
-        System.out.println(port);
         long start = System.currentTimeMillis();
         long end = start + 30 * 1000; // calculate 30 seconds from system time
         while (System.currentTimeMillis() < end) {  // try for 30 seconds
@@ -234,7 +241,6 @@ public class UserCommands {
 
         int hiOrderBit = Integer.parseInt(portString.nextToken());
         int lowOrderBit = Integer.parseInt(portString.nextToken());
-        System.out.println(hiOrderBit + " " + lowOrderBit);
         int port = (hiOrderBit * 256) + lowOrderBit;
         return port;
     }

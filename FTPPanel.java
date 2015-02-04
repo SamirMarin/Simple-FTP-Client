@@ -28,7 +28,6 @@ public class FTPPanel {
 
     private UserCommands uc = new UserCommands();
     private ServerMessages sm;
-    private static Socket datacxn;
     private static Socket controlCxn;
     private static BufferedWriter serverOut;
     private static BufferedReader serverIn;
@@ -38,7 +37,6 @@ public class FTPPanel {
     int len;
     private boolean isOpen = false;
     private boolean startProg = false;
-    private volatile boolean running = true;
     private String latestRead;
     ByteBuffer buf = ByteBuffer.allocate(1024);
     SocketChannel inChannel;
@@ -123,14 +121,13 @@ public class FTPPanel {
     public synchronized boolean setupControlCxn(String hostname, int port) throws IOException{
         try {
             controlCxn = new Socket(hostname, port);
+            serverIn = new BufferedReader(new InputStreamReader(controlCxn.getInputStream()));
+            serverOut = new BufferedWriter(new OutputStreamWriter(controlCxn.getOutputStream()));
         }
         catch (IOException e) {
-            printOutput("820 Control Connection to " + hostname + " on port " + port + " failed to open");
+            throw new IOException("820 Control Connection to " + hostname + " on port " + port + " failed to open");
+            //printOutput("820 Control Connection to " + hostname + " on port " + port + " failed to open");
         }
-
-            serverIn = new BufferedReader(new InputStreamReader(controlCxn.getInputStream()));
-            inChannel = controlCxn.getChannel();
-            serverOut = new BufferedWriter(new OutputStreamWriter(controlCxn.getOutputStream()));
             return true;
 
     }
@@ -143,7 +140,7 @@ public class FTPPanel {
             key = inChannel.register(selector, SelectionKey.OP_READ);
         }
         catch (IOException e) {
-            printOutput("820 Control Connection to " + hostname + " on port " + port + " failed to open");
+            throw new IOException("820 Control Connection to " + hostname + " on port " + port + " failed to open");
         }
 
         return true;
@@ -171,7 +168,6 @@ public class FTPPanel {
         }
         catch (IOException e) {
             System.out.println(e.getMessage());
-
         }
         return null;
     }
@@ -235,7 +231,7 @@ public class FTPPanel {
             if (args.get(0).equalsIgnoreCase("open")) {
                 try {
                     handleCommand(args);
-                } catch (Exception e) {
+                } catch (IOException e) {
                     printOutput(e.getMessage());
                 }
                 if (isOpen()) {
@@ -269,9 +265,9 @@ public class FTPPanel {
             cmd = new String(cmdString, "UTF-8");
             return cmd;
         } catch (IOException e) {
-            e.printStackTrace();
+            printOutput("899 Processing error " + e.getMessage());
         }
-        return "800 try again";
+        return null;
     }
     public synchronized void printOutput(String output) {
         System.out.println(output);
@@ -282,10 +278,6 @@ public class FTPPanel {
 
     public void setOpen(boolean isOpen) {
         this.isOpen = isOpen;
-    }
-    public enum CommandStrings {
-        OPEN, USER, CLOSE, QUIT, GET, PUT, CD, DIR, PASS;
-
     }
     public UserCommands getUc() {
         return uc;
@@ -298,4 +290,22 @@ public class FTPPanel {
     public void setStartProg(boolean startProg) {
         this.startProg = startProg;
     }
+
+    public static Socket getControlCxn() {
+        return controlCxn;
+    }
+
+    public static BufferedReader getServerIn() {
+        return serverIn;
+    }
+
+    public static BufferedWriter getServerOut() {
+        return serverOut;
+    }
+
+    public enum CommandStrings {
+        OPEN, USER, CLOSE, QUIT, GET, PUT, CD, DIR, PASS;
+
+    }
+
 }
