@@ -202,7 +202,10 @@ public class UserCommands {
         }
         input = new BufferedInputStream(file);
         FTPPanel.getInstance().sendInput("STOR " + path);
-        FTPPanel.getInstance().readLine();
+        String storResp = FTPPanel.getInstance().readLine();
+            if (storResp.contains("550")) {
+                return;
+            }
         int bytesRead;
         while ((bytesRead = input.read(buffer)) != -1) {
             dataWriter.write(buffer, 0, bytesRead);
