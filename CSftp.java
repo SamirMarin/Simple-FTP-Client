@@ -8,7 +8,6 @@
 
 public class CSftp
 {
-	static final int MAX_LEN = 255;
 
 	public static void main(String [] args)
 	{

@@ -78,7 +78,9 @@ public class UserCommands {
             }
             ArrayList<String> args2 = FTPPanel.getInstance().parseInput("PASS " + input);
             passCmd(args2);
-            FTPPanel.getInstance().readLine();
+        }
+        else if (response.contains("230 ")) {
+            FTPPanel.getInstance().setLoggedIn(true);
         }
     }
 
@@ -91,9 +93,18 @@ public class UserCommands {
             return;
         }
         FTPPanel.getInstance().sendInput("PASS " + args.get(1));
+
+        String response = FTPPanel.getInstance().readLine();
+        if (response.contains("230 ")) {
+            FTPPanel.getInstance().setLoggedIn(true);
+        }
     }
 
     public synchronized void dirCmd(ArrayList<String> args) {
+        if (!FTPPanel.getInstance().isLoggedIn()) {
+            FTPPanel.getInstance().printOutput("803 Supplied command not expected at this time");
+            return;
+        }
         if (args.size() < 1) {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
             return;
@@ -127,6 +138,10 @@ public class UserCommands {
     }
 
     public synchronized void changeDicCmd(ArrayList<String> args)throws IOException{
+        if (!FTPPanel.getInstance().isLoggedIn()) {
+            FTPPanel.getInstance().printOutput("803 Supplied command not expected at this time");
+            return;
+        }
         if (args.size() != 2) {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
             return;
@@ -147,6 +162,7 @@ public class UserCommands {
         }finally {
             FTPPanel.getInstance().setOpen(false);
             FTPPanel.getInstance().setStartProg(false);
+            FTPPanel.getInstance().setLoggedIn(false);
         }
     }
 
@@ -158,6 +174,10 @@ public class UserCommands {
     }
 
     public synchronized void putCmd(ArrayList<String> args){
+        if (!FTPPanel.getInstance().isLoggedIn()) {
+            FTPPanel.getInstance().printOutput("803 Supplied command not expected at this time");
+            return;
+        }
         if (args.size() < 2) {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
             return;
@@ -199,6 +219,10 @@ public class UserCommands {
     }
 
     public synchronized  void getCmd(ArrayList<String> args){
+        if (!FTPPanel.getInstance().isLoggedIn()) {
+            FTPPanel.getInstance().printOutput("803 Supplied command not expected at this time");
+            return;
+        }
         if(args.size() < 2){
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
 
