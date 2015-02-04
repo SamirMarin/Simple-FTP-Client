@@ -98,6 +98,7 @@ public class FTPPanel {
                     uc.passCmd(args);
                     break;
                 case GET:
+                    uc.getCmd(args);
                     break;
                 case PUT:
                     uc.putCmd(args);

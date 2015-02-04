@@ -1,9 +1,13 @@
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+import sun.misc.IOUtils;
+
 import java.io.*;
 import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.zip.InflaterInputStream;
 
 /**
  * Created by rohinpatel on 15-01-24.
@@ -16,6 +20,8 @@ public class UserCommands {
     private DataOutputStream dataWriter;
     private ByteArrayInputStream byteArrayInputStream;
     private InputStream file;
+    private BufferedInputStream input;
+    private DataInputStream dataReaderRetr;
 
     public synchronized void openCmd(ArrayList<String> args) throws IOException {
         if (FTPPanel.getInstance().isOpen()) {
@@ -100,6 +106,8 @@ public class UserCommands {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
             return;
         }
+        FTPPanel.getInstance().sendInput("TYPE I");
+        FTPPanel.getInstance().readLine();
         FTPPanel.getInstance().sendInput("PASV");
         String response = FTPPanel.getInstance().readLine();
         if (!response.contains("227 ")) {
@@ -168,7 +176,8 @@ public class UserCommands {
         createDataConnection(response, "STOR", path);
         FTPPanel.getInstance().readLine();
         try {
-            dataReader.close();
+            input.close();
+            file.close();
             dataWriter.close();
             dataSocket.close();
         }
@@ -176,6 +185,31 @@ public class UserCommands {
         }
         FTPPanel.getInstance().readLine();
     }
+    public synchronized  void getCmd(ArrayList<String> args){
+        if(args.size() < 2){
+            FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
+
+        }
+        FTPPanel.getInstance().sendInput("PASV");
+        String response = FTPPanel.getInstance().readLine();
+        if (!response.contains("227 ")) {
+            FTPPanel.getInstance().printOutput("899 Processing Error");
+            return;
+        }
+        createDataConnection(response, "RETR", args.get(1));
+        FTPPanel.getInstance().readLine();
+        try {
+            input.close();
+            file.close();
+            dataWriter.close();
+            dataSocket.close();
+        }
+        catch (IOException e) {
+        }
+        FTPPanel.getInstance().readLine();
+    }
+
+
 
     private  synchronized void createDataConnection(String response, String cmd) {
         createDataConnection(response, cmd, "");
@@ -212,8 +246,8 @@ public class UserCommands {
                 } else if (cmd.equals("STOR")) {
                     byte[] buffer = new byte[4096];
                     //byteArrayInputStream = new ByteArrayInputStream(buffer);
-                    InputStream fileRead = openFile(userInput.trim());
-                    BufferedInputStream input = new BufferedInputStream(fileRead);
+                    InputStream file = openFile(userInput.trim());
+                    input = new BufferedInputStream(file);
                     FTPPanel.getInstance().sendInput(cmd + userInput);
                     FTPPanel.getInstance().readLine();
                     int bytesRead = 0;
@@ -221,7 +255,20 @@ public class UserCommands {
                         dataWriter.write(buffer, 0, bytesRead);
 
                     }
+                }else if (cmd.equals("RETR")) {
+                    FTPPanel.getInstance().sendInput(cmd + userInput);
+                    FTPPanel.getInstance().readLine();
+                    dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
+                    FileWriter file = new FileWriter(userInput.trim());
+                    BufferedWriter outFile = new BufferedWriter(file);
+                    while(dataReader.readLine() != null){
+                        outFile.write(dataReader.readLine());
+                    }
+                    file.close();
+                    outFile.close();
+
                 }
+
             } catch (Exception e) {
 
             }
@@ -247,12 +294,13 @@ public class UserCommands {
 
     private InputStream openFile(String fileToPass){
         try {
-             file = new FileInputStream(fileToPass);
+            file = new FileInputStream(fileToPass);
         } catch (FileNotFoundException e) {
-            System.out.println("810 Access to local file XXX denied");
+            e.printStackTrace();
         }
         return file;
     }
+
 
         //
     }
