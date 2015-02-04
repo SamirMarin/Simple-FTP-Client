@@ -18,7 +18,6 @@ public class UserCommands {
     private Socket dataSocket;
     private BufferedReader dataReader;
     private DataOutputStream dataWriter;
-    private ByteArrayInputStream byteArrayInputStream;
     private InputStream file;
     private BufferedInputStream input;
     private DataInputStream dataReaderRetr;
@@ -173,7 +172,9 @@ public class UserCommands {
             return;
         }
         String path = FTPPanel.getInstance().concatWithSpaces(args);
-        createDataConnection(response, "STOR", path);
+        if (createDataConnection(response, "STOR", path) == -1) {
+            return;
+        }
         FTPPanel.getInstance().readLine();
         try {
             input.close();
@@ -190,13 +191,17 @@ public class UserCommands {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
 
         }
+        FTPPanel.getInstance().sendInput("TYPE I");
+        FTPPanel.getInstance().readLine();
         FTPPanel.getInstance().sendInput("PASV");
         String response = FTPPanel.getInstance().readLine();
         if (!response.contains("227 ")) {
             FTPPanel.getInstance().printOutput("899 Processing Error");
             return;
         }
-        createDataConnection(response, "RETR", args.get(1));
+        if (createDataConnection(response, "RETR", args.get(1)) == -1) {
+            return;
+        }
         FTPPanel.getInstance().readLine();
         try {
             input.close();
@@ -206,7 +211,6 @@ public class UserCommands {
         }
         catch (IOException e) {
         }
-        FTPPanel.getInstance().readLine();
     }
 
 
@@ -215,7 +219,7 @@ public class UserCommands {
         createDataConnection(response, cmd, "");
     }
 
-    private synchronized void createDataConnection(String response, String cmd, String userInput) {
+    private synchronized int createDataConnection(String response, String cmd, String userInput) {
         if (userInput != "") {
             userInput = " " + userInput;
         }
@@ -244,9 +248,12 @@ public class UserCommands {
                         FTPPanel.getInstance().printOutput(output);
                     }
                 } else if (cmd.equals("STOR")) {
-                    byte[] buffer = new byte[4096];
+                    byte[] buffer = new byte[64000];
                     //byteArrayInputStream = new ByteArrayInputStream(buffer);
                     InputStream file = openFile(userInput.trim());
+                    if (file == null) {
+                        return -1;
+                    }
                     input = new BufferedInputStream(file);
                     FTPPanel.getInstance().sendInput(cmd + userInput);
                     FTPPanel.getInstance().readLine();
@@ -255,23 +262,28 @@ public class UserCommands {
                         dataWriter.write(buffer, 0, bytesRead);
 
                     }
+
+                    file.close();
                 }else if (cmd.equals("RETR")) {
                     FTPPanel.getInstance().sendInput(cmd + userInput);
-                    FTPPanel.getInstance().readLine();
-                    dataReader = new BufferedReader(new InputStreamReader(dataSocket.getInputStream()));
-                    FileWriter file = new FileWriter(userInput.trim());
-                    BufferedWriter outFile = new BufferedWriter(file);
-                    while(dataReader.readLine() != null){
-                        outFile.write(dataReader.readLine());
+                    String retrResp = FTPPanel.getInstance().readLine();
+                    if (retrResp.contains("550")) {
+                        return -1;
                     }
-                    file.close();
-                    outFile.close();
+                    dataReaderRetr = new DataInputStream(new BufferedInputStream(dataSocket.getInputStream()));
+                    FileOutputStream outputFile= new FileOutputStream(userInput); // need to change
+                    byte[] buffer = new byte[64000];
+                    int bytesRead = 0;
+                    while((bytesRead = dataReaderRetr.read(buffer)) != -1) {
+                        outputFile.write(buffer, 0, bytesRead);
+                    }
 
                 }
 
             } catch (Exception e) {
 
             }
+        return 0;
     }
 
     private String getIpAddress(String message){
@@ -296,7 +308,7 @@ public class UserCommands {
         try {
             file = new FileInputStream(fileToPass);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            FTPPanel.getInstance().printOutput("810 Access to local file " + fileToPass  + " denied.");
         }
         return file;
     }
