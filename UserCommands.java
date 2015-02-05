@@ -44,7 +44,7 @@ public class UserCommands {
                port = Integer.parseInt(args.get(2));
           }
           catch (Exception e) {
-              System.out.println("Invalid port, defaulting to 21");
+              System.out.println("802 Invalid argument. Defaulting to port 21");
               port = 21;
           }
         }

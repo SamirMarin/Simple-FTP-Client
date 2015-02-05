@@ -246,10 +246,12 @@ public class FTPPanel {
         Arrays.fill(cmdString, (byte) 0);
         try {
             len = System.in.read(cmdString);
+
             cmd = new String(cmdString, "UTF-8");
             return cmd;
         } catch (IOException e) {
-            printOutput("899 Processing error " + e.getMessage());
+            printOutput("898 Input error while reading commands, terminating");
+            System.exit(-1);
         }
         return null;
     }
