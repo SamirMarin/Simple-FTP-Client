@@ -99,9 +99,6 @@ public class FTPPanel {
                 case QUIT:
                     uc.quitCmd();
                     break;
-                case PASS:
-                    uc.passCmd(args);
-                    break;
                 case GET:
                     uc.getCmd(args);
                     break;
@@ -296,7 +293,7 @@ public class FTPPanel {
     }
 
     public enum CommandStrings {
-        OPEN, USER, CLOSE, QUIT, GET, PUT, CD, DIR, PASS
+        OPEN, USER, CLOSE, QUIT, GET, PUT, CD, DIR
 
     }
 

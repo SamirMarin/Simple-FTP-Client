@@ -25,7 +25,7 @@ public class UserCommands {
     */
     public synchronized void openCmd(ArrayList<String> args) throws IOException {
         if (FTPPanel.getInstance().isOpen()) {
-            System.out.println("Already connected to server, please quit before connecting to another server");
+            System.out.println("803 Supplied command not expected at this time.");
             return;
         }
         if (args.size() < 2) {
@@ -70,6 +70,10 @@ public class UserCommands {
      * and ask for password to be specified by user if required by server
      * */
     public synchronized void userCmd(ArrayList<String> args) throws IOException{
+        if(FTPPanel.getInstance().isLoggedIn()){
+            System.out.println("803 supplied command not expected at this time");
+            return;
+        }
         if (args.size() != 2) {
             System.out.println("801 Incorrect number of arguments.");
             return;
@@ -100,7 +104,7 @@ public class UserCommands {
     /**
      * reads the user password when require by FTP server
      * */
-    public synchronized void passCmd(ArrayList<String> args)throws IOException {
+    private synchronized void passCmd(ArrayList<String> args)throws IOException {
         if (args.size() != 2) {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
             return;
@@ -126,7 +130,7 @@ public class UserCommands {
             FTPPanel.getInstance().printOutput("803 Supplied command not expected at this time");
             return;
         }
-        if (args.size() < 1) {
+        if (args.size() != 1) {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
             return;
         }
@@ -151,10 +155,10 @@ public class UserCommands {
             while ((output = dataReader.readLine()) != null) {
                 FTPPanel.getInstance().printOutput(output);
             }
-            isTimeOut(FTPPanel.getInstance().readLine());
             dataReader.close();
             dataWriter.close();
             dataSocket.close();
+            isTimeOut(FTPPanel.getInstance().readLine());
         } catch (IOException e) {
         }
 
@@ -245,22 +249,21 @@ public class UserCommands {
             if (isTimeOut(storResp)) {
                 return;
             }
-            if (storResp.contains("550")) {
+            if (!(storResp.contains("150") || storResp.contains("125"))){
                 return;
             }
         int bytesRead;
         while ((bytesRead = input.read(buffer)) != -1) {
             dataWriter.write(buffer, 0, bytesRead);
         }
-        isTimeOut(FTPPanel.getInstance().readLine());
             input.close();
             file.close();
             dataWriter.close();
             dataSocket.close();
+            isTimeOut(FTPPanel.getInstance().readLine());
         }
         catch (IOException e) {
         }
-        isTimeOut(FTPPanel.getInstance().readLine());
     }
     /**
      * establishes a data connection with the server
@@ -274,7 +277,7 @@ public class UserCommands {
         }
         if(args.size() < 2){
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
-
+            return;
         }
         FTPPanel.getInstance().sendInput("TYPE I");
         if (isTimeOut(FTPPanel.getInstance().readLine())) {
@@ -296,7 +299,7 @@ public class UserCommands {
         if (isTimeOut(retrResp)) {
             return;
         }
-        if (retrResp.contains("550")) {
+        if (!(retrResp.contains("150") || retrResp.contains("125"))){
            return;
         }
         try {
@@ -308,11 +311,9 @@ public class UserCommands {
         while((bytesRead = dataReaderRetr.read(buffer)) != -1) {
             outputFile.write(buffer, 0, bytesRead);
         }
-            isTimeOut(FTPPanel.getInstance().readLine());
-            input.close();
-            file.close();
             dataWriter.close();
             dataSocket.close();
+            isTimeOut(FTPPanel.getInstance().readLine());
         }
         catch (IOException e) {
         }
