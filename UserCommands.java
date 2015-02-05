@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
@@ -55,7 +56,9 @@ public class UserCommands {
            if  (FTPPanel.getInstance().setupControlCxn(hostName, port)) {
             System.out.println("Connected to " + args.get(1));
                FTPPanel.getInstance().setOpen(true);
-               FTPPanel.getInstance().readLine();
+               if (isTimeOut(FTPPanel.getInstance().readLine())){
+                   return;
+               }
         }
         else {
                return;
@@ -78,6 +81,9 @@ public class UserCommands {
 
         FTPPanel.getInstance().sendInput("USER " + user);
         String response = FTPPanel.getInstance().readLine();
+        if (isTimeOut(response)) {
+            return;
+        }
         if (response.contains("331 ")) {
             System.out.print("Please enter a password: ");
             String input = FTPPanel.getInstance().readInput();
@@ -105,6 +111,9 @@ public class UserCommands {
         FTPPanel.getInstance().sendInput("PASS " + args.get(1));
 
         String response = FTPPanel.getInstance().readLine();
+        if (isTimeOut(response)) {
+            return;
+        }
         if (response.contains("230 ")) {
             FTPPanel.getInstance().setLoggedIn(true);
         }
@@ -112,7 +121,7 @@ public class UserCommands {
     /**
      * provides a list of directories in server once logged in
      * */
-    public synchronized void dirCmd(ArrayList<String> args) {
+    public synchronized void dirCmd(ArrayList<String> args) throws IOException {
         if (!FTPPanel.getInstance().isLoggedIn()) {
             FTPPanel.getInstance().printOutput("803 Supplied command not expected at this time");
             return;
@@ -125,6 +134,9 @@ public class UserCommands {
         FTPPanel.getInstance().readLine();
         FTPPanel.getInstance().sendInput("PASV");
         String response = FTPPanel.getInstance().readLine();
+        if (isTimeOut(response)) {
+            return;
+        }
         if (!response.contains("227 ")) {
             FTPPanel.getInstance().printOutput("899 Processing Error");
             return;
@@ -139,14 +151,14 @@ public class UserCommands {
             while ((output = dataReader.readLine()) != null) {
                 FTPPanel.getInstance().printOutput(output);
             }
-            FTPPanel.getInstance().readLine();
+            isTimeOut(FTPPanel.getInstance().readLine());
             dataReader.close();
             dataWriter.close();
             dataSocket.close();
         } catch (IOException e) {
         }
 
-        FTPPanel.getInstance().readLine();
+        isTimeOut(FTPPanel.getInstance().readLine());
     }
     /**
      * changes the current working directory on server
@@ -162,7 +174,9 @@ public class UserCommands {
         }
             String directory = FTPPanel.getInstance().concatWithSpaces(args);
             FTPPanel.getInstance().sendInput("CWD " + directory);
-            FTPPanel.getInstance().readLine();
+            if (isTimeOut(FTPPanel.getInstance().readLine())) {
+                return;
+            }
     }
     /**
      * closes the established FTP server connection
@@ -195,7 +209,7 @@ public class UserCommands {
      * sends a file specified by the user to the server
      * the file is saved with the same name on the remote machine
      * */
-    public synchronized void putCmd(ArrayList<String> args){
+    public synchronized void putCmd(ArrayList<String> args) throws IOException{
         if (!FTPPanel.getInstance().isLoggedIn()) {
             FTPPanel.getInstance().printOutput("803 Supplied command not expected at this time");
             return;
@@ -208,6 +222,9 @@ public class UserCommands {
         FTPPanel.getInstance().readLine();
         FTPPanel.getInstance().sendInput("PASV");
         String response = FTPPanel.getInstance().readLine();
+        if (isTimeOut(response)) {
+            return;
+        }
         if (!response.contains("227 ")) {
             FTPPanel.getInstance().printOutput("899 Processing Error");
             return;
@@ -225,6 +242,9 @@ public class UserCommands {
         input = new BufferedInputStream(file);
         FTPPanel.getInstance().sendInput("STOR " + path);
         String storResp = FTPPanel.getInstance().readLine();
+            if (isTimeOut(storResp)) {
+                return;
+            }
             if (storResp.contains("550")) {
                 return;
             }
@@ -232,7 +252,7 @@ public class UserCommands {
         while ((bytesRead = input.read(buffer)) != -1) {
             dataWriter.write(buffer, 0, bytesRead);
         }
-        FTPPanel.getInstance().readLine();
+        isTimeOut(FTPPanel.getInstance().readLine());
             input.close();
             file.close();
             dataWriter.close();
@@ -240,14 +260,14 @@ public class UserCommands {
         }
         catch (IOException e) {
         }
-        FTPPanel.getInstance().readLine();
+        isTimeOut(FTPPanel.getInstance().readLine());
     }
     /**
      * establishes a data connection with the server
      * retrieves file on remote machine specified by user
      * saves file on local machine with the same name
      * */
-    public synchronized  void getCmd(ArrayList<String> args){
+    public synchronized  void getCmd(ArrayList<String> args) throws IOException{
         if (!FTPPanel.getInstance().isLoggedIn()) {
             FTPPanel.getInstance().printOutput("803 Supplied command not expected at this time");
             return;
@@ -257,9 +277,14 @@ public class UserCommands {
 
         }
         FTPPanel.getInstance().sendInput("TYPE I");
-        FTPPanel.getInstance().readLine();
+        if (isTimeOut(FTPPanel.getInstance().readLine())) {
+            return;
+        }
         FTPPanel.getInstance().sendInput("PASV");
         String response = FTPPanel.getInstance().readLine();
+        if (isTimeOut(response)) {
+            return;
+        }
         if (!response.contains("227 ")) {
             FTPPanel.getInstance().printOutput("899 Processing Error");
             return;
@@ -268,6 +293,9 @@ public class UserCommands {
          createDataConnection(response);
         FTPPanel.getInstance().sendInput("RETR " + path);
         String retrResp = FTPPanel.getInstance().readLine();
+        if (isTimeOut(retrResp)) {
+            return;
+        }
         if (retrResp.contains("550")) {
            return;
         }
@@ -280,7 +308,7 @@ public class UserCommands {
         while((bytesRead = dataReaderRetr.read(buffer)) != -1) {
             outputFile.write(buffer, 0, bytesRead);
         }
-        FTPPanel.getInstance().readLine();
+            isTimeOut(FTPPanel.getInstance().readLine());
             input.close();
             file.close();
             dataWriter.close();
@@ -293,24 +321,21 @@ public class UserCommands {
      * helper method used to create a data connection
      * for the putCmd, dirCmd and UserCmd methods
      * */
-    private synchronized void createDataConnection(String response) {
+    private synchronized void createDataConnection(String response) throws IOException {
         int startIndex = response.indexOf("(") + 1;
         int endIndex = response.indexOf(")", startIndex + 1);
         String responseIpPort = response.substring(startIndex, endIndex);
         String ip = getIpAddress(responseIpPort);
         int port = getPort(responseIpPort);
-        long start = System.currentTimeMillis();
-        long end = start + 30 * 1000; // calculate 30 seconds from system time
-        while (System.currentTimeMillis() < end) {  // try for 30 seconds
             try {
-                dataSocket = new Socket(InetAddress.getByName(ip), port);
-                break;
-            } catch (Exception e) {
-                FTPPanel.getInstance().printOutput(e.getMessage());
+                dataSocket = new Socket();
+                dataSocket.connect(new InetSocketAddress(ip, port), 30000);
+            } catch (IOException e) {
+                throw new IOException("820 Control Connection to " + ip + " on port " + port + " failed to open");
             }
         }
 
-    }
+
     /**
      * helper method used to parse the IP address
      * for a data connection specified by remote machine
@@ -334,6 +359,23 @@ public class UserCommands {
         int lowOrderBit = Integer.parseInt(portString.nextToken());
         int port = (hiOrderBit * 256) + lowOrderBit;
         return port;
+    }
+
+    /**
+     *
+     * @param reply - reply string from server
+     * @return closes conneciton and returns true if message has "421 timeout" else returns false
+     */
+    public synchronized boolean isTimeOut(String reply) {
+        if (reply.contains("421 ")) {
+            try {
+                closeCmd();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
     }
     /**
      * helper method used by the put method

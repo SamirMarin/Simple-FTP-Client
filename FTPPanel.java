@@ -1,5 +1,6 @@
 
 import java.io.*;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -23,18 +24,25 @@ public class FTPPanel {
     private boolean isOpen = false;
     private boolean isLoggedIn = false;
     private boolean startProg = false;
-    private String latestRead;
 
     private FTPPanel () {
     }
 
-
+    /**
+     * Singleton method that returns only instance of FTPPanel
+     * @return FTPPanel instance
+     */
     public synchronized static FTPPanel getInstance() {
        if (ftp == null)  {
            ftp = new FTPPanel();
        }
         return ftp;}
 
+    /**
+     * Parses input from user into ArrayList to be checked by handleCommand
+     * @param cmd - String returned from System.in
+     * @return
+     */
     public synchronized ArrayList<String> parseInput(String cmd) {
         ArrayList<String> args = new ArrayList<String>();
         int firstindex = 0;
@@ -55,6 +63,12 @@ public class FTPPanel {
         return args;
 
     }
+
+    /**
+     * Concatenates an array of parsed arguments with spaces since ParseInput removes all spaces
+     * @param args ArrayList of parsed commands
+     * @return
+     */
     public synchronized String concatWithSpaces(ArrayList<String> args) {
         String line = "";
         for (int i = 1; i < args.size(); i++) {
@@ -64,6 +78,11 @@ public class FTPPanel {
         return line.trim();
     }
 
+    /**
+     * Handles parsed commands and executes appropriate function
+     * @param args - arraylist of arguments created by the parser
+     * @throws IOException
+     */
     public synchronized void handleCommand(ArrayList<String> args) throws IOException {
         try {
             CommandStrings val = CommandStrings.valueOf(args.get(0).toUpperCase());
@@ -103,20 +122,33 @@ public class FTPPanel {
         }
 
     }
+
+    /**
+     *
+     * @param hostname - host to connect to
+     * @param port - optional port to connect on
+     * @return true if successful
+     * @throws IOException
+     */
     public synchronized boolean setupControlCxn(String hostname, int port) throws IOException{
         try {
-            controlCxn = new Socket(hostname, port);
+            controlCxn = new Socket();
+            controlCxn.connect(new InetSocketAddress(hostname, port), 30000);
             serverIn = new BufferedReader(new InputStreamReader(controlCxn.getInputStream()));
             serverOut = new BufferedWriter(new OutputStreamWriter(controlCxn.getOutputStream()));
+            return true;
         }
         catch (IOException e) {
             throw new IOException("820 Control Connection to " + hostname + " on port " + port + " failed to open");
             //printOutput("820 Control Connection to " + hostname + " on port " + port + " failed to open");
         }
-            return true;
 
     }
 
+    /**
+     * Sends command to server
+     * @param cmd - command to be sent
+     */
     public synchronized void sendInput(String cmd) {
         try {
             printOutput("--> " + cmd);
@@ -128,41 +160,45 @@ public class FTPPanel {
 
         }
     }
+
+    /**
+     * Reads lines from server. Checks until code appears with space (indicating last line of server message)
+     * @return a String reply of message from server
+     */
     public synchronized String readLine() {
         String line = null;
         String code = null;
+        StringBuffer buf = new StringBuffer();
         try {
             do {
                 line = serverIn.readLine();
                 if (code == null)
                     code = line.substring(0, 3);
-                printOutput("<--" + line);
+                printOutput("<-- " + line);
+                buf.append(line);
             }
             while(!(line.startsWith(code) && line.charAt(3) == ' '));
-            latestRead = line;
-            return line;
+            return buf.toString();
         }
         catch (IOException e) {
             System.out.println(e.getMessage());
         }
         return null;
     }
+
+    /**
+     * Prints the "csftp> " prompt
+     */
     public synchronized void printPrompt() {
             System.out.print(prompt);
     }
-    public synchronized void checkIfTimeOut() {
-        if (latestRead.contains("421 ")) {
-            try {
-                controlCxn.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            setOpen(false);
-            setStartProg(false);
-        }
-    }
 
-    public synchronized void run() {
+    /**
+     * Main loop for entire application. Outside loop checks if first command is open.
+     * If it is open AND a valid connection is made then the rest of the client functions will be made available
+     * Else it will continue to wait for a valid connection
+     */
+    public void run() {
         while (true) {
             printPrompt();
             String firstInput = readInput();
@@ -193,7 +229,6 @@ public class FTPPanel {
                     }
                     try {
                         handleCommand(args);
-                        checkIfTimeOut();
                     } catch (Exception e) {
                         System.out.println(e.getMessage());
                     }
@@ -201,6 +236,11 @@ public class FTPPanel {
             }
     }
     }
+
+    /**
+     * Reads input from System.in
+     * @return Returns a string to be handled by the parseInput function
+     */
     public String readInput() {
         String cmd;
         Arrays.fill(cmdString, (byte) 0);
@@ -213,6 +253,11 @@ public class FTPPanel {
         }
         return null;
     }
+
+    /**
+     * Used by all functions to print output. (Easier just to call this function)
+     * @param output
+     */
     public synchronized void printOutput(String output) {
         System.out.println(output);
     }
@@ -222,13 +267,6 @@ public class FTPPanel {
 
     public void setOpen(boolean isOpen) {
         this.isOpen = isOpen;
-    }
-    public UserCommands getUc() {
-        return uc;
-    }
-
-    public boolean isStartProg() {
-        return startProg;
     }
 
     public void setStartProg(boolean startProg) {
