@@ -64,7 +64,7 @@ public class FTPPanel {
                 firstindex = i;
             }
         }
-        if(args.size() == 0 || args.get(0).trim().substring(0 , 1).equals("#")){
+        if(args.size() == 0 || args.get(0).trim().substring(0, 1).equals("#")){
             args.clear();
             args.add(0, "#");
         }
@@ -165,9 +165,18 @@ public class FTPPanel {
     }
     public synchronized String readLine() {
         String line = null;
+        String code = null;
         try {
-            line = serverIn.readLine();
-            printOutput("<-- " + line);
+            do {
+                line = serverIn.readLine();
+                if (code == null)
+                    code = line.substring(0, 3);
+                printOutput("<--" + line);
+            }
+            while(!(line.startsWith(code) && line.charAt(3) == ' '));
+            //}
+            //line = serverIn.readLine();
+            //printOutput("<-- " + line);
             latestRead = line;
             return line;
         }
