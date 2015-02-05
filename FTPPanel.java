@@ -56,20 +56,19 @@ public class FTPPanel {
         ArrayList<String> args = new ArrayList<String>();
         int firstindex = 0;
         for (int i=0; i < cmd.length(); i++) {
-            if(args.size() == 0){
-                args.add(0, "#");
-                return args;
-            }
-            else if ((cmd.charAt(i) == ' ') || (cmd.charAt(i) == '\n')) {
+            if ((cmd.charAt(i) == ' ') || (cmd.charAt(i) == '\n')) {
                 if(!((cmd.substring(firstindex, i).equals(" ")) || (cmd.substring(firstindex, i).equals("")))){
                     args.add(cmd.substring(firstindex,i));
                 }
                 i = ++i;
                 firstindex = i;
             }
-
-
         }
+        if(args.size() == 0 || args.get(0).trim().substring(0 , 1).equals("#")){
+            args.clear();
+            args.add(0, "#");
+        }
+
         return args;
 
     }
@@ -244,7 +243,7 @@ public class FTPPanel {
                     startProg = true;
                 }
             }
-            else if(args.get(0).equals("#"))
+            else if(args.get(0).trim().equals("#"))
                 continue;
             else {
                 printOutput("803 Supplied command not expected at this time.");
@@ -255,6 +254,9 @@ public class FTPPanel {
                     printPrompt();
                     String cmd = readInput();
                     args = parseInput(cmd);
+                    if(args.get(0).trim().equals("#")){
+                        continue;
+                    }
                     try {
                         handleCommand(args);
                         checkIfTimeOut();
