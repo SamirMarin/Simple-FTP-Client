@@ -7,6 +7,8 @@ import java.util.StringTokenizer;
 /**
  * Created by rohinpatel on 15-01-24.
  * UserCommands implemented by both Rohin Patel and Samir Marin
+ *
+ * contains all FTP connection methods and helpers
  */
 public class UserCommands {
 
@@ -16,7 +18,10 @@ public class UserCommands {
     private InputStream file;
     private BufferedInputStream input;
     private DataInputStream dataReaderRetr;
-
+    /**
+    * connect to FTP server on giver specified port
+    * if no port is specified connects to port 21
+    */
     public synchronized void openCmd(ArrayList<String> args) throws IOException {
         if (FTPPanel.getInstance().isOpen()) {
             System.out.println("Already connected to server, please quit before connecting to another server");
@@ -57,7 +62,10 @@ public class UserCommands {
            }
 
     }
-
+    /**
+     * read the user name to log in to FTP server
+     * and ask for password to be specified by user if required by server
+     * */
     public synchronized void userCmd(ArrayList<String> args) throws IOException{
         if (args.size() != 2) {
             System.out.println("801 Incorrect number of arguments.");
@@ -83,7 +91,9 @@ public class UserCommands {
             FTPPanel.getInstance().setLoggedIn(true);
         }
     }
-
+    /**
+     * reads the user password when require by FTP server
+     * */
     public synchronized void passCmd(ArrayList<String> args)throws IOException {
         if (args.size() != 2) {
             FTPPanel.getInstance().printOutput("801 Incorrect number of arguments.");
@@ -99,7 +109,9 @@ public class UserCommands {
             FTPPanel.getInstance().setLoggedIn(true);
         }
     }
-
+    /**
+     * provides a list of directories in server once logged in
+     * */
     public synchronized void dirCmd(ArrayList<String> args) {
         if (!FTPPanel.getInstance().isLoggedIn()) {
             FTPPanel.getInstance().printOutput("803 Supplied command not expected at this time");
@@ -136,7 +148,9 @@ public class UserCommands {
 
         FTPPanel.getInstance().readLine();
     }
-
+    /**
+     * changes the current working directory on server
+     * */
     public synchronized void changeDicCmd(ArrayList<String> args)throws IOException{
         if (!FTPPanel.getInstance().isLoggedIn()) {
             FTPPanel.getInstance().printOutput("803 Supplied command not expected at this time");
@@ -150,8 +164,10 @@ public class UserCommands {
             FTPPanel.getInstance().sendInput("CWD " + directory);
             FTPPanel.getInstance().readLine();
     }
-
-
+    /**
+     * closes the established FTP server connection
+     * where the next command expected by the FTP client is an open
+     * */
     public synchronized void closeCmd()throws IOException {
         try {
             FTPPanel.getInstance().sendInput("QUIT");
@@ -165,14 +181,20 @@ public class UserCommands {
             FTPPanel.getInstance().setLoggedIn(false);
         }
     }
-
-
+    /**
+     * closes any establish connection and
+     * closes the FTP client program
+     * */
     public synchronized void quitCmd() throws IOException {
         closeCmd();
         System.exit(0);
 
     }
-
+    /**
+     * establishes data connection with server
+     * sends a file specified by the user to the server
+     * the file is saved with the same name on the remote machine
+     * */
     public synchronized void putCmd(ArrayList<String> args){
         if (!FTPPanel.getInstance().isLoggedIn()) {
             FTPPanel.getInstance().printOutput("803 Supplied command not expected at this time");
@@ -220,7 +242,11 @@ public class UserCommands {
         }
         FTPPanel.getInstance().readLine();
     }
-
+    /**
+     * establishes a data connection with the server
+     * retrieves file on remote machine specified by user
+     * saves file on local machine with the same name
+     * */
     public synchronized  void getCmd(ArrayList<String> args){
         if (!FTPPanel.getInstance().isLoggedIn()) {
             FTPPanel.getInstance().printOutput("803 Supplied command not expected at this time");
@@ -263,10 +289,10 @@ public class UserCommands {
         catch (IOException e) {
         }
     }
-
-
-
-
+    /**
+     * helper method used to create a data connection
+     * for the putCmd, dirCmd and UserCmd methods
+     * */
     private synchronized void createDataConnection(String response) {
         int startIndex = response.indexOf("(") + 1;
         int endIndex = response.indexOf(")", startIndex + 1);
@@ -285,13 +311,19 @@ public class UserCommands {
         }
 
     }
-
+    /**
+     * helper method used to parse the IP address
+     * for a data connection specified by remote machine
+     * */
     private String getIpAddress(String message){
         StringTokenizer ipString = new StringTokenizer(message, ",");
         return ipString.nextToken() + "." + ipString.nextToken() + "." + ipString.nextToken() + "." + ipString.nextToken();
 
     }
-
+    /**
+     * helper method used to parse the Port number
+     * for a data connection specified by remote machine
+     * */
     private int getPort(String message){
         StringTokenizer portString = new StringTokenizer(message, ",");
         for(int i = 0; i < 4; i++){
@@ -303,7 +335,11 @@ public class UserCommands {
         int port = (hiOrderBit * 256) + lowOrderBit;
         return port;
     }
-
+    /**
+     * helper method used by the put method
+     * to open local file as a file input stream
+     * for sending to remote machine
+     * */
     private InputStream openFile(String fileToPass){
         try {
             file = new FileInputStream(fileToPass);
@@ -312,9 +348,6 @@ public class UserCommands {
         }
         return file;
     }
-
-
-        //
     }
 
 
