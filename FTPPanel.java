@@ -1,25 +1,11 @@
 
 import java.io.*;
-import java.lang.reflect.Array;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Created by rohinpatel on 15-01-26.
+ * Created by Rohin Patel and Samir Marin on 15-01-26.
  */
 public class FTPPanel {
 
@@ -35,12 +21,9 @@ public class FTPPanel {
     private String prompt = "csftp> ";
     int len;
     private boolean isOpen = false;
+    private boolean isLoggedIn = false;
     private boolean startProg = false;
     private String latestRead;
-    ByteBuffer buf = ByteBuffer.allocate(1024);
-    SocketChannel inChannel;
-    Selector selector;
-    SelectionKey key;
 
     private FTPPanel () {
     }
@@ -78,7 +61,6 @@ public class FTPPanel {
             line += args.get(i) + " ";
 
         }
-        printOutput(line);
         return line.trim();
     }
 
@@ -120,8 +102,6 @@ public class FTPPanel {
             return;
         }
 
-        return;
-
     }
     public synchronized boolean setupControlCxn(String hostname, int port) throws IOException{
         try {
@@ -134,21 +114,6 @@ public class FTPPanel {
             //printOutput("820 Control Connection to " + hostname + " on port " + port + " failed to open");
         }
             return true;
-
-    }
-    public synchronized boolean setupSocketChannel(String hostname, int port) throws IOException{
-        try {
-            inChannel = SocketChannel.open();
-            inChannel.connect(new InetSocketAddress(hostname, port));
-            selector = Selector.open();
-            inChannel.configureBlocking(false);
-            key = inChannel.register(selector, SelectionKey.OP_READ);
-        }
-        catch (IOException e) {
-            throw new IOException("820 Control Connection to " + hostname + " on port " + port + " failed to open");
-        }
-
-        return true;
 
     }
 
@@ -174,9 +139,6 @@ public class FTPPanel {
                 printOutput("<--" + line);
             }
             while(!(line.startsWith(code) && line.charAt(3) == ' '));
-            //}
-            //line = serverIn.readLine();
-            //printOutput("<-- " + line);
             latestRead = line;
             return line;
         }
@@ -184,30 +146,6 @@ public class FTPPanel {
             System.out.println(e.getMessage());
         }
         return null;
-    }
-    public synchronized void readSocketChannel() {
-        try {
-            buf.clear();
-            int bytesRead;
-            String line = "";
-            int totalBytes = 0;
-                bytesRead = inChannel.read(buf);
-            while (bytesRead != -1) {
-
-                buf.flip();
-                CharBuffer cbuf = StandardCharsets.UTF_8.decode(buf);
-                System.out.print(cbuf.toString());
-                buf.clear();
-                bytesRead = inChannel.read(buf);
-            }
-            //for (int i = 0; i <= bytesRead; i++) {
-             //   line += Byte.toString(buf.get(i));
-            //}
-
-            return;
-        } catch (IOException e) {
-
-        }
     }
     public synchronized void printPrompt() {
             System.out.print(prompt);
@@ -221,19 +159,6 @@ public class FTPPanel {
             }
             setOpen(false);
             setStartProg(false);
-        }
-    }
-
-    public synchronized void sendSocketChannel(String message) {
-        try {
-            buf.clear();
-            buf.put(message.getBytes());
-            buf.flip();
-            while (buf.hasRemaining()) {
-                inChannel.write(buf);
-            }
-        } catch (IOException e) {
-
         }
     }
 
@@ -322,8 +247,16 @@ public class FTPPanel {
         return serverOut;
     }
 
+    public boolean isLoggedIn() {
+        return isLoggedIn;
+    }
+
+    public void setLoggedIn(boolean isLoggedIn) {
+        this.isLoggedIn = isLoggedIn;
+    }
+
     public enum CommandStrings {
-        OPEN, USER, CLOSE, QUIT, GET, PUT, CD, DIR, PASS;
+        OPEN, USER, CLOSE, QUIT, GET, PUT, CD, DIR, PASS
 
     }
 
