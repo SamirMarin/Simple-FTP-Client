@@ -135,7 +135,7 @@ public class UserCommands {
             return;
         }
         FTPPanel.getInstance().sendInput("TYPE I");
-        FTPPanel.getInstance().readLine();
+        isTimeOut(FTPPanel.getInstance().readLine());
         FTPPanel.getInstance().sendInput("PASV");
         String response = FTPPanel.getInstance().readLine();
         if (isTimeOut(response)) {
